@@ -78,7 +78,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-//        showKey(e, "typed");
+        showKey(e, "typed");
         throw new RuntimeException("typed");
     }
 
@@ -96,10 +96,10 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     private static void showKey(KeyEvent e, String pressed) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(pressed +" ext: " + e.getExtendedKeyCode());
-            LOGGER.debug(pressed +" char: " + e.getKeyChar());
-            LOGGER.debug(pressed +" int: " + e.getKeyCode());
-            LOGGER.debug(pressed +" loc: " + e.getKeyLocation());
+            LOGGER.debug(pressed + " ext: " + e.getExtendedKeyCode());
+            LOGGER.debug(pressed + " char: " + e.getKeyChar());
+            LOGGER.debug(pressed + " int: " + e.getKeyCode());
+            LOGGER.debug(pressed + " loc: " + e.getKeyLocation());
         }
     }
 }

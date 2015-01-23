@@ -9,7 +9,7 @@ import view.MainWindow;
 public class Main implements Runnable {
 
     public static void main(String[] args) {
-EventQueue.invokeLater(new Main());
+        EventQueue.invokeLater(new Main());
     }
 
     @Override
