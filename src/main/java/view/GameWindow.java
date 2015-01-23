@@ -41,13 +41,14 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         closeButton.addActionListener(this);
 
         addKeyListener(this);
+        setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
     }
 
     private void initGui() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JPanel panel = new JPanel();
-        panel.addKeyListener(this);
         add(panel);
 
         int width = 150;
@@ -78,20 +79,17 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        showKey(e, "typed");
-        throw new RuntimeException("typed");
+//        showKey(e, "typed");
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         showKey(e, "pressed");
-        throw new RuntimeException("pressed");
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         showKey(e, "released");
-        throw new RuntimeException("released");
     }
 
     private static void showKey(KeyEvent e, String pressed) {
