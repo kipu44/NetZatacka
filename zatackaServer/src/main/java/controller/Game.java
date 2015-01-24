@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.Random;
+import org.apache.log4j.Logger;
 import view.Point;
 
 /**
@@ -10,21 +11,22 @@ import view.Point;
  */
 public class Game implements Runnable {
 
-    private final int SIZE_X = 10;
-    private final int SIZE_Y = 10;
+    public static final Logger LOGGER = Logger.getLogger(Game.class);
+
+    private final int width;
+    private final int height;
     private final double ROTATE = 0.25f;
     private final Random RANDOM = new Random();
 
     private long lastTime;
-    private ArrayList<Point> positions = new ArrayList<>();
-    private ArrayList<Point> directions = new ArrayList<>();
+    private final ArrayList<Point> positions = new ArrayList<>();
+    private final ArrayList<Point> directions = new ArrayList<>();
 
-    public Game() {
+    public Game(int width, int height) {
+        this.width = width;
+        this.height = height;
         lastTime = System.nanoTime();
-        //positions.add(new Point(RANDOM.nextInt() % SIZE_X, RANDOM.nextInt() % SIZE_Y));
-        positions.add(new Point(200, 200));
-        int angle = RANDOM.nextInt();
-        directions.add(new Point(Math.sin(angle), Math.cos(angle)));
+        addPlayer();
     }
 
     @Override
@@ -34,22 +36,28 @@ public class Game implements Runnable {
             long newTime = System.nanoTime();
             float deltaTime = (float)(newTime - lastTime) / 20000000.0f;
             lastTime = newTime;
-
-            for (int i = 0; i < positions.size(); i++) {
+            for (int i = 0; i < positions.size() && i < directions.size(); i++) {
                 positions.get(i).translate(directions.get(i).getX() * deltaTime, directions.get(i).getY() * deltaTime);
             }
         }
     }
 
-    public ArrayList<Point> getPositions() {
+    public final synchronized void addPlayer() {
+        positions.add(new Point(RANDOM.nextInt() % width, RANDOM.nextInt() % height));
+        //positions.add(new Point(200, 200));
+        int angle = RANDOM.nextInt();
+        directions.add(new Point(Math.sin(angle), Math.cos(angle)));
+    }
+
+    public synchronized ArrayList<Point> getPositions() {
         return positions;
     }
 
-    public void rotateLeft(int i) {
+    public synchronized void rotateLeft(int i) {
         directions.get(i).rotate(ROTATE);
     }
 
-    public void rotateRight(int i) {
+    public synchronized void rotateRight(int i) {
         directions.get(i).rotate(-ROTATE);
     }
 

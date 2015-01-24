@@ -27,6 +27,9 @@ public class MainWindow extends JFrame {
 
     private static final Logger LOGGER = Logger.getLogger(MainWindow.class);
 
+    public static final int WIDTH = 600;
+    public static final int HEIGHT = 600;
+
     //ServerSocket, Socket, Input and Output Streams
     private ServerSocket serverSocket = null;
     private List<ConnectionThread> connections = new ArrayList<>();
@@ -116,12 +119,15 @@ public class MainWindow extends JFrame {
                 while (connections.size() < 9) {
                     textArea.append("Czekanie na klienta...\n");
                     scrollToBottom();
-                    connections.add(new ConnectionThread(connections.size(), serverSocket.accept()));
 
                     if (game == null) {
-                        game = new Game();
-                        game.run();
+                        game = new Game(WIDTH, HEIGHT);
+                        new Thread(game, "Game").start();
+                    } else {
+                        game.addPlayer();
                     }
+
+                    connections.add(new ConnectionThread(connections.size(), serverSocket.accept()));
 
                     textArea.append("Polaczono z klientem.\n");
                     scrollToBottom();
@@ -156,13 +162,14 @@ public class MainWindow extends JFrame {
 
         @Override
         public void run() {
+            out.println(Integer.toString(WIDTH)  + "/" + Integer.toString(HEIGHT));
+
             while (true) {
                 try {
-                    if (game != null) {
-                        //textArea.append(Double.toString(game.getPositions().get(id).getX()) + "/" + Double.toString(game.getPositions().get(id).getY()) + "\n");
-                        out.println(Integer.toString((int)game.getPositions().get(id).getX())
-                                + "/" + Integer.toString((int)game.getPositions().get(id).getY())
-                                + "/" + Integer.toString(255));
+                    for (Point p : game.getPositions()) {
+                        out.println(Integer.toString((int)p.getX())
+                                            + "/" + Integer.toString((int)p.getY())
+                                            + "/" + Integer.toString(255));
                     }
 
                     if (in.ready()) {
@@ -170,12 +177,15 @@ public class MainWindow extends JFrame {
                         textArea.append(inLine);
 
                         if ("l".equals(inLine)) {
-                            game.rotateLeft(0);
+                            game.rotateLeft(id);
                         } else if ("r".equals(inLine)) {
-                            game.rotateRight(0);
+                            game.rotateRight(id);
                         }
                     }
-                } catch (IOException ex) {
+
+                    // TODO: Synchronizacja
+                    Thread.sleep(10);
+                } catch (IOException | InterruptedException ex) {
                     LOGGER.error(ex.getMessage(), ex);
                 }
             }
