@@ -29,10 +29,12 @@ import org.apache.log4j.Logger;
  */
 public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
+    private static final long serialVersionUID = -8526687153001631775L;
+
     public static final Logger LOGGER = Logger.getLogger(GameWindow.class);
 
-    private int width = 250;
-    private int height = 200;
+    private int width = 640;
+    private int height = 480;
 
     private boolean leftKey;
     private boolean rightKey;
@@ -48,7 +50,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
 
-        setSize(new Dimension(250, 250));
+        setSize(new Dimension(width + 50, height + 100));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(parent);
 
