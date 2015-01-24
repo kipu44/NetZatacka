@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rafal on 24.01.15.
@@ -24,11 +25,11 @@ public class Player {
         return positions.get(positions.size() - 1);
     }
 
-    public ArrayList<Point> getPositions() {
-        return positions;
+    public void addPosition(Point position) {
+        positions.add(position);
     }
 
-    public Point getPosition(int i) {
-        return positions.get(i);
+    public List<Point> getPositions() {
+        return positions;
     }
 }

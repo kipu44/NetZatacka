@@ -38,14 +38,36 @@ public class Game implements Runnable {
             lastTime = newTime;
             for (Player player : players) {
                 Point lastPosition = player.getLastPosition();
+
                 double x = player.getDirection().getX() * deltaTime;
                 double y = player.getDirection().getY() * deltaTime;
-                lastPosition.translate(x, y);
+                Point newPosition = lastPosition.translatedPoint(x, y);
+
+                if (collision(players, newPosition)) {
+                    players.remove(player);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("gracz przegral ("+player+")");
+                    }
+                } else {
+                    player.addPosition(newPosition);
+                }
             }
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("koniec gry");
             }
         }
+    }
+
+    private boolean collision(ArrayList<Player> players, Point position) {
+        for (Player player : players) {
+            for (Point point : player.getPositions()) {
+                if (position.equals(point)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
