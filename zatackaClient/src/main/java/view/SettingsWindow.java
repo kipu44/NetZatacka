@@ -27,11 +27,8 @@ public class SettingsWindow extends JDialog implements ActionListener {
 
     public static final Logger LOGGER = Logger.getLogger(SettingsWindow.class);
 
-    private JLabel hostLabel;
     private JTextField hostTextField;
-    private JLabel portLabel;
     private JSpinner portSpinner;
-    private JLabel nickLabel;
     private JTextField nickTextField;
     private JButton okButton;
 
@@ -53,7 +50,7 @@ public class SettingsWindow extends JDialog implements ActionListener {
         LayoutManager boxLayout = new BoxLayout(pane, BoxLayout.Y_AXIS);
         pane.setLayout(boxLayout);
 
-        hostLabel = new JLabel("host:");
+        JLabel hostLabel = new JLabel("host:");
         hostLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(hostLabel);
 
@@ -61,7 +58,7 @@ public class SettingsWindow extends JDialog implements ActionListener {
         hostTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(hostTextField);
 
-        portLabel = new JLabel("port:");
+        JLabel portLabel = new JLabel("port:");
         portLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(portLabel);
 
@@ -69,7 +66,7 @@ public class SettingsWindow extends JDialog implements ActionListener {
         portSpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(portSpinner);
 
-        nickLabel = new JLabel("nick:");
+        JLabel nickLabel = new JLabel("nick:");
         nickLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(nickLabel);
 

@@ -110,29 +110,45 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        showKey(e, "pressed");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("pressed");
+        }
+        boolean show = true;
         if (e.getKeyChar() == 'f' && !leftKey) {
             leftKey = true;
-        }
-        if (e.getKeyChar() == 'g' && !rightKey) {
+        } else if (e.getKeyChar() == 'g' && !rightKey) {
             rightKey = true;
-        }
-        if (e.getKeyChar() == 't' && !upKey) {
+        } else if (e.getKeyChar() == 't' && !upKey) {
             upKey = true;
-        }
-        if (e.getKeyChar() == 'v' && !downKey) {
+        } else if (e.getKeyChar() == 'v' && !downKey) {
             downKey = true;
+        } else {
+            show = false;
+        }
+        if (show) {
+            showKey(e, "pressed");
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        showKey(e, "released");
-        if (e.getKeyChar() == 'f') {
-            leftKey = false;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("released");
         }
-        if (e.getKeyChar() == 'g') {
+        boolean show = true;
+        if (e.getKeyChar() == 'f' && leftKey) {
+            leftKey = false;
+        } else if (e.getKeyChar() == 'g' && rightKey) {
             rightKey = false;
+        } else if (e.getKeyChar() == 't' && upKey) {
+            upKey = false;
+        } else if (e.getKeyChar() == 'v' && downKey) {
+            downKey = false;
+        } else {
+            show = false;
+        }
+        if (show) {
+            showKey(e, "released");
         }
     }
 
@@ -153,17 +169,20 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                     LOGGER.debug("start watku " + movingThreadRunning);
                 }
                 while (movingThreadRunning) {
+                    boolean refresh = false;
                     if (leftKey) {
                         x = (x - 1 + width) % width;
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("lewo");
                         }
+                        refresh = true;
                     }
                     if (rightKey) {
                         x = (x + 1) % width;
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("prawo");
                         }
+                        refresh = true;
                     }
 
                     if (upKey) {
@@ -171,17 +190,21 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("gora");
                         }
+                        refresh = true;
                     }
                     if (downKey) {
                         y = (y + 1) % height;
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("dol");
                         }
+                        refresh = true;
                     }
 
-                    image.setRGB(x, y, Color.RED.getRGB());
-                    Icon icon = new ImageIcon(image);
-                    board.setIcon(icon);
+                    if (refresh) {
+                        image.setRGB(x, y, Color.RED.getRGB());
+                        Icon icon = new ImageIcon(image);
+                        board.setIcon(icon);
+                    }
 
                     try {
 //                        if (LOGGER.isDebugEnabled()) {
@@ -189,7 +212,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 //                        }
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        LOGGER.error("sleep-error");
+                        LOGGER.error("sleep-error: " + e.getMessage(), e);
                     }
                 }
 
