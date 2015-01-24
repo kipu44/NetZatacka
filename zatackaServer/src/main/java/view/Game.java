@@ -14,9 +14,9 @@ import java.util.Random;
  */
 public class Game implements Runnable{
 
-    private final int SIZE_X = 100;
-    private final int SIZE_Y = 100;    
-    private final double ROTATE = 0.05f;
+    private final int SIZE_X = 10;
+    private final int SIZE_Y = 10;    
+    private final double ROTATE = 0.25f;
     private final Random RANDOM = new Random();
     private long lastTime;
     private ArrayList<Point> positions = new ArrayList<>();
@@ -24,7 +24,8 @@ public class Game implements Runnable{
     
     public Game() {
         lastTime = System.nanoTime();
-        positions.add(new Point(RANDOM.nextInt() % SIZE_X, RANDOM.nextInt() % SIZE_Y));
+        //positions.add(new Point(RANDOM.nextInt() % SIZE_X, RANDOM.nextInt() % SIZE_Y));
+        positions.add(new Point(200, 200));
         int angle = RANDOM.nextInt();
         directions.add(new Point(Math.sin(angle), Math.cos(angle)));
     } 
@@ -34,7 +35,7 @@ public class Game implements Runnable{
         
         while (true) {
             long newTime = System.nanoTime();
-            float deltaTime = (float)(newTime - lastTime) / 10000000.0f;
+            float deltaTime = (float)(newTime - lastTime) / 20000000.0f;
             lastTime = newTime;
             
             for (int i = 0; i < positions.size(); i++) {
