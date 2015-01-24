@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import model.Point;
 import org.apache.log4j.Logger;
 
 public class MainWindow extends JFrame {
@@ -168,14 +168,16 @@ public class MainWindow extends JFrame {
 
         @Override
         public void run() {
-            out.println(Integer.toString(WIDTH)  + "/" + Integer.toString(HEIGHT));
+            out.println(Integer.toString(WIDTH) + "/" + Integer.toString(HEIGHT));
 
             while (true) {
                 try {
-                    for (int i = 0; i < game.getPositions().size(); i++) {
-                        out.println(Integer.toString((int)game.getPositions().get(i).getX())
-                                            + "/" + Integer.toString((int)game.getPositions().get(i).getY())
-                                            + "/" + Integer.toString(255));
+                    for (int i = 0; i < game.getPlayers().size(); i++) {
+                        Point lastPlayerPosition = game.getPlayers().get(i).getLastPosition();
+                        String x = Integer.toString((int) lastPlayerPosition.getX());
+                        String y = Integer.toString((int) lastPlayerPosition.getY());
+                        String c = Integer.toString(255);
+                        out.println(x + "/" + y + "/" + c);
                     }
 
                     if (in.ready()) {

@@ -2,25 +2,26 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.Random;
+import model.Player;
+import model.Point;
 import org.apache.log4j.Logger;
-import view.Point;
 
 /**
- *
  * @author Lukasz
  */
 public class Game implements Runnable {
 
-    public static final Logger LOGGER = Logger.getLogger(Game.class);
+    private static final Logger LOGGER = Logger.getLogger(Game.class);
 
     private final int width;
     private final int height;
     private final double ROTATE = 0.25f;
     private final Random RANDOM = new Random();
 
+    private boolean running = true;
+
     private long lastTime;
-    private final ArrayList<Point> positions = new ArrayList<>();
-    private final ArrayList<Point> directions = new ArrayList<>();
+    private final ArrayList<Player> players = new ArrayList<>();
 
     public Game(int width, int height) {
         this.width = width;
@@ -31,34 +32,50 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-
-        while (true) {
+        while (running) {
             long newTime = System.nanoTime();
-            float deltaTime = (float)(newTime - lastTime) / 20000000.0f;
+            float deltaTime = (float) (newTime - lastTime) / 20000000.0f;
             lastTime = newTime;
-            for (int i = 0; i < positions.size() && i < directions.size(); i++) {
-                positions.get(i).translate(directions.get(i).getX() * deltaTime, directions.get(i).getY() * deltaTime);
+            for (Player player : players) {
+                Point lastPosition = player.getLastPosition();
+                double x = player.getDirection().getX() * deltaTime;
+                double y = player.getDirection().getY() * deltaTime;
+                lastPosition.translate(x, y);
+            }
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("koniec gry");
             }
         }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        running = false;
+        super.finalize();
+    }
+
     public final synchronized void addPlayer() {
-        positions.add(new Point(RANDOM.nextInt() % width, RANDOM.nextInt() % height));
-        //positions.add(new Point(200, 200));
-        int angle = RANDOM.nextInt();
-        directions.add(new Point(Math.sin(angle), Math.cos(angle)));
+        double angle = Math.toRadians(RANDOM.nextInt(360));
+        Point direction = new Point(StrictMath.sin(angle), StrictMath.cos(angle));
+        Point position = new Point(RANDOM.nextInt(width), RANDOM.nextInt(height));
+        players.add(new Player(direction, position));
     }
 
-    public synchronized ArrayList<Point> getPositions() {
-        return positions;
+    public ArrayList<Player> getPlayers() {
+        synchronized (players) {
+            return players;
+        }
     }
 
-    public synchronized void rotateLeft(int i) {
-        directions.get(i).rotate(ROTATE);
+    public void rotateLeft(int i) {
+        synchronized (players) {
+            players.get(i).getDirection().rotate(ROTATE);
+        }
     }
 
-    public synchronized void rotateRight(int i) {
-        directions.get(i).rotate(-ROTATE);
+    public void rotateRight(int i) {
+        synchronized (players) {
+            players.get(i).getDirection().rotate(-ROTATE);
+        }
     }
-
 }

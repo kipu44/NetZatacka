@@ -1,4 +1,4 @@
-package view;
+package model;
 
 /**
  *
@@ -18,12 +18,14 @@ public class Point {
         this.x += x;
         this.y += y;
     }
-    
+
     public synchronized void rotate(double angle) {
-        double s = Math.sin(angle);
-        double c = Math.cos(angle);
+        double s = StrictMath.sin(angle);
+        double c = StrictMath.cos(angle);
+
         double x = this.x * c - this.y * s;
         double y = this.x * s + this.y * c;
+
         this.x = x;
         this.y = y;
     }
