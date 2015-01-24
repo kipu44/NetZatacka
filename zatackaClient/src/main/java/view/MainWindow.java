@@ -6,9 +6,11 @@ import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import model.ConnectionSettings;
 import net.SocketManager;
@@ -76,29 +78,33 @@ public class MainWindow extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String actionCommand = e.getActionCommand();
-        switch (actionCommand) {
-            case Commands.PLAY_COMMMAND:
-                gameWindow.setVisible(true);
-                gameWindow.startMoving(settings);
-                break;
-            case Commands.SETTINGS_COMMAND:
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("ustawnienia");
-                }
-                settingsWindow.setVisible(true);
-                break;
-            case Commands.OK_COMMAND:
-                settings = settingsWindow.getSettings();
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("ustawnienia ok");
-                }
-                break;
-            case Commands.CLOSE_COMMAND:
-                dispose();
-                break;
-            default:
-                LOGGER.warn("nieznana komenda: " + actionCommand);
+        try {
+            String actionCommand = e.getActionCommand();
+            switch (actionCommand) {
+                case Commands.PLAY_COMMMAND:
+                    gameWindow.startMoving(settings);
+                    gameWindow.setVisible(true);
+                    break;
+                case Commands.SETTINGS_COMMAND:
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("ustawnienia");
+                    }
+                    settingsWindow.setVisible(true);
+                    break;
+                case Commands.OK_COMMAND:
+                    settings = settingsWindow.getSettings();
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("ustawnienia ok");
+                    }
+                    break;
+                case Commands.CLOSE_COMMAND:
+                    dispose();
+                    break;
+                default:
+                    LOGGER.warn("nieznana komenda: " + actionCommand);
+            }
+        } catch (IOException e1) {
+            JOptionPane.showMessageDialog(this, e1.getMessage(), "Blad", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

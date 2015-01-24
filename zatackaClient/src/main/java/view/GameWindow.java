@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -167,7 +168,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         }
     }
 
-    public void startMoving(ConnectionSettings settings) {
+    public void startMoving(ConnectionSettings settings) throws IOException {
         socketManager.createConnection(settings);
 
         Thread movingThread = new Thread(new Runnable() {

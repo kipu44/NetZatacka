@@ -25,7 +25,7 @@ public class SocketManager {
     public SocketManager() {
     }
     
-    public void createConnection(ConnectionSettings settings) {
+    public void createConnection(ConnectionSettings settings) throws IOException {
         try {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Tworzenie polaczenia:" + settings.getHost() + ":" + settings.getPort());
@@ -37,6 +37,7 @@ public class SocketManager {
             
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
+            throw ex;
         }
      }
 
