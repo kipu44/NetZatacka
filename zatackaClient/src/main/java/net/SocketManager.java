@@ -14,10 +14,9 @@ import org.apache.log4j.Logger;
  * @author Lukasz
  */
 public class SocketManager {
-    
-    public static final Logger LOGGER = Logger.getLogger(SocketManager.class);
-    
-    
+
+    private static final Logger LOGGER = Logger.getLogger(SocketManager.class);
+
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;

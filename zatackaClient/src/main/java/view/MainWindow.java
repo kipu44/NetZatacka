@@ -21,13 +21,17 @@ import org.apache.log4j.Logger;
  */
 public class MainWindow extends JFrame implements ActionListener {
 
-    public static final Logger LOGGER = Logger.getLogger(MainWindow.class);
+    private static final long serialVersionUID = -6508168645897184063L;
+
+    private static final Logger LOGGER = Logger.getLogger(MainWindow.class);
 
     private JButton playButton;
     private JButton closeButton;
 
     private JButton settingsButton;
     private GameWindow gameWindow;
+
+    private SocketManager socketManager;
 
     private SettingsWindow settingsWindow;
     private ConnectionSettings settings;
@@ -53,9 +57,11 @@ public class MainWindow extends JFrame implements ActionListener {
         settingsWindow = new SettingsWindow(this);
         settingsWindow.setOkListener(this);
 
-        gameWindow = new GameWindow(this);
+        socketManager = new SocketManager();
 
-        settings=new ConnectionSettings();
+        settings = new ConnectionSettings();
+
+        gameWindow = new GameWindow(this);
     }
 
     private void initGui() {
@@ -82,7 +88,16 @@ public class MainWindow extends JFrame implements ActionListener {
             String actionCommand = e.getActionCommand();
             switch (actionCommand) {
                 case Commands.PLAY_COMMMAND:
-                    gameWindow.startMoving(settings);
+                    socketManager.createConnection(settings);
+
+                    String command = socketManager.getIn().readLine();
+                    String[] rowInts = command.split("/");
+
+                    int width = Integer.parseInt(rowInts[0]);
+                    int height = Integer.parseInt(rowInts[1]);
+
+                    gameWindow.setBoardSize(width, height);
+                    gameWindow.startMoving(socketManager);
                     gameWindow.setVisible(true);
                     break;
                 case Commands.SETTINGS_COMMAND:
