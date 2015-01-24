@@ -14,6 +14,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,6 +37,7 @@ public class MainWindow extends JFrame {
     private ServerSocket serverSocket = null;
     private List<ConnectionThread> connections = new ArrayList<>();
     private Game game;
+    CountDownLatch barrier;
 
     // Window info
     private Dimension screenSize;                                    // screen size
@@ -127,6 +131,8 @@ public class MainWindow extends JFrame {
                         game.addPlayer();
                     }
 
+                    barrier = new CountDownLatch(connections.size() + 1);
+
                     connections.add(new ConnectionThread(connections.size(), serverSocket.accept()));
 
                     textArea.append("Polaczono z klientem.\n");
@@ -166,9 +172,9 @@ public class MainWindow extends JFrame {
 
             while (true) {
                 try {
-                    for (Point p : game.getPositions()) {
-                        out.println(Integer.toString((int)p.getX())
-                                            + "/" + Integer.toString((int)p.getY())
+                    for (int i = 0; i < game.getPositions().size(); i++) {
+                        out.println(Integer.toString((int)game.getPositions().get(i).getX())
+                                            + "/" + Integer.toString((int)game.getPositions().get(i).getY())
                                             + "/" + Integer.toString(255));
                     }
 
@@ -183,8 +189,8 @@ public class MainWindow extends JFrame {
                         }
                     }
 
-                    // TODO: Synchronizacja
-                    Thread.sleep(10);
+                    barrier.countDown();
+                    barrier.await(50, TimeUnit.MILLISECONDS);
                 } catch (IOException | InterruptedException ex) {
                     LOGGER.error(ex.getMessage(), ex);
                 }
