@@ -177,13 +177,13 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("lewo");
                         }
-                        socketManager.getOut().append("l");
+                        socketManager.getOut().println("l");
                     }
                     if (rightKey) {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("prawo");
                         }
-                        socketManager.getOut().append("r");
+                        socketManager.getOut().println("r");
                     }
 
                     try {
