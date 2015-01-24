@@ -46,22 +46,22 @@ public class Game implements Runnable{
         }
     }
     
-    public final void addPlayer() {
+    public final synchronized void addPlayer() {
         positions.add(new Point(RANDOM.nextInt() % width, RANDOM.nextInt() % height));
         //positions.add(new Point(200, 200));
         int angle = RANDOM.nextInt();
         directions.add(new Point(Math.sin(angle), Math.cos(angle)));
     }
 
-    public ArrayList<Point> getPositions() {
+    public synchronized ArrayList<Point> getPositions() {
         return positions;
     }
     
-    public void rotateLeft(int i) {
+    public synchronized void rotateLeft(int i) {
         directions.get(i).rotate(ROTATE);
     }
     
-        public void rotateRight(int i) {
+    public synchronized void rotateRight(int i) {
         directions.get(i).rotate(-ROTATE);
     }
     

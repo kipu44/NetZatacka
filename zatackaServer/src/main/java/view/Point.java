@@ -18,12 +18,12 @@ public class Point {
         this.y = y;
     }
     
-    public void translate(double x, double y) {
+    public synchronized void translate(double x, double y) {
         this.x += x;
         this.y += y;
     }
     
-    public void rotate(double angle) {
+    public synchronized void rotate(double angle) {
         double s = Math.sin(angle);
         double c = Math.cos(angle);
         double x = this.x * c - this.y * s;
@@ -32,11 +32,11 @@ public class Point {
         this.y = y;
     }
 
-    public double getX() {
+    public synchronized double getX() {
         return x;
     }
 
-    public double getY() {
+    public synchronized double getY() {
         return y;
     }
     
