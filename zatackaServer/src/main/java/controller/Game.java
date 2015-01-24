@@ -46,15 +46,15 @@ public class Game implements Runnable {
                 if (collision(players, newPosition)) {
                     players.remove(player);
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("gracz przegral ("+player+")");
+                        LOGGER.debug("gracz przegral (" + player + ")");
                     }
                 } else {
                     player.addPosition(newPosition);
                 }
             }
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("koniec gry");
-            }
+        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("koniec gry");
         }
     }
 

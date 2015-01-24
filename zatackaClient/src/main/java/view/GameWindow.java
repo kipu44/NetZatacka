@@ -202,9 +202,9 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                         int column = Integer.parseInt(rowInts[1]);
                         int color = Integer.parseInt(rowInts[2]);
 
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("x = " + row + ", y = " + column + ", color = " + color);
-                        }
+//                        if (LOGGER.isDebugEnabled()) {
+//                            LOGGER.debug("x = " + row + ", y = " + column + ", color = " + color);
+//                        }
 
                         image.setRGB(row, column, color);
                         refreshBoardImage();
