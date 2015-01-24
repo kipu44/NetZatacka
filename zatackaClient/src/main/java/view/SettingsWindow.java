@@ -25,7 +25,7 @@ public class SettingsWindow extends JDialog implements ActionListener {
 
     private static final long serialVersionUID = -2054887271562037871L;
 
-    public static final Logger LOGGER = Logger.getLogger(SettingsWindow.class);
+    private static final Logger LOGGER = Logger.getLogger(SettingsWindow.class);
 
     private JTextField hostTextField;
     private JSpinner portSpinner;

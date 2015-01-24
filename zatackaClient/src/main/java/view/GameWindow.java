@@ -20,7 +20,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
-import model.ConnectionSettings;
 import net.SocketManager;
 import org.apache.log4j.Logger;
 
@@ -31,7 +30,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     private static final long serialVersionUID = -8526687153001631775L;
 
-    public static final Logger LOGGER = Logger.getLogger(GameWindow.class);
+    private static final Logger LOGGER = Logger.getLogger(GameWindow.class);
 
     private int width = 640;
     private int height = 480;
@@ -44,8 +43,6 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
     private JLabel board;
 
     private boolean movingThreadRunning;
-
-    private SocketManager socketManager;
 
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
@@ -68,8 +65,6 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                 movingThreadRunning = false;
             }
         });
-
-        socketManager = new SocketManager();
     }
 
     private void initGui() {
@@ -77,14 +72,8 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         LayoutManager boxLayout = new BoxLayout(pane, BoxLayout.Y_AXIS);
         pane.setLayout(boxLayout);
 
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                image.setRGB(x, y, 0xFF000000 | 250 * x / width << 16 | 250 * y / height << 8 | 0xFF / 2);
-            }
-        }
-        ImageIcon icon = new ImageIcon(image);
-        board = new JLabel(icon);
+        board = new JLabel();
+        createBoardImage(width, height);
         board.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(board);
 
@@ -159,8 +148,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         }
     }
 
-    public void startMoving(ConnectionSettings settings) throws IOException {
-        socketManager.createConnection(settings);
+    public void startMoving(SocketManager socketManager) throws IOException {
         removeKeyListener(this);
         addKeyListener(this);
 
@@ -215,8 +203,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                         int color = Integer.parseInt(rowInts[2]);
 
                         image.setRGB(row, column, color);
-                        Icon icon = new ImageIcon(image);
-                        board.setIcon(icon);
+                        refreshBoardImage();
                     } catch (IOException | NumberFormatException e) {
                         LOGGER.error(e.getMessage(), e);
                     }
@@ -240,5 +227,28 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start3");
         }
+    }
+
+    public void setBoardSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        setSize(new Dimension(width + 50, height + 100));
+
+        createBoardImage(width, height);
+    }
+
+    private void createBoardImage(int newWidth, int newHeight) {
+        image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        for (int x = 0; x < newWidth; x++) {
+            for (int y = 0; y < newHeight; y++) {
+                image.setRGB(x, y, 0xFF000000 | 250 * x / newWidth << 16 | 250 * y / newHeight << 8 | 0xFF / 2);
+            }
+        }
+        refreshBoardImage();
+    }
+
+    private void refreshBoardImage() {
+        Icon icon = new ImageIcon(image);
+        board.setIcon(icon);
     }
 }
