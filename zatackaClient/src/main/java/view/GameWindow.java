@@ -203,32 +203,21 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         });
 
         Thread writingThread = new Thread(new Runnable() {
-            private int row;
-            private int column;
-            private int color;
-
             @Override
             public void run() {
                 while (movingThreadRunning) {
                     try {
-                        if (row == -1) {
-                            row = socketManager.getIn().read();
-                        }
-                        if (column == -1) {
-                            column = socketManager.getIn().read();
-                        }
-                        if (color == -1) {
-                            color = socketManager.getIn().read();
-                        }
+                        String command = socketManager.getIn().readLine();
+                        String[] rowInts = command.split("/");
+
+                        int row = Integer.parseInt(rowInts[0]);
+                        int column = Integer.parseInt(rowInts[1]);
+                        int color = Integer.parseInt(rowInts[2]);
 
                         image.setRGB(row, column, color);
                         Icon icon = new ImageIcon(image);
                         board.setIcon(icon);
-
-                        row = -1;
-                        column = -1;
-                        color = -1;
-                    } catch (IOException e) {
+                    } catch (IOException | NumberFormatException e) {
                         LOGGER.error(e.getMessage(), e);
                     }
                 }
