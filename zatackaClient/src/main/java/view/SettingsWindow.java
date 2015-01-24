@@ -56,13 +56,14 @@ public class SettingsWindow extends JDialog implements ActionListener {
 
         hostTextField = new JTextField();
         hostTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        hostTextField.setText("127.0.0.1");
         pane.add(hostTextField);
 
         JLabel portLabel = new JLabel("port:");
         portLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(portLabel);
 
-        portSpinner = new JSpinner(new SpinnerNumberModel(8080, 0, 10000, 1));
+        portSpinner = new JSpinner(new SpinnerNumberModel(9876, 0, 10000, 1));
         portSpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
         pane.add(portSpinner);
 
