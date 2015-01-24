@@ -1,26 +1,33 @@
 package view;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import model.ConnectionSettings;
+import org.apache.log4j.Logger;
 
 /**
  * Created by rafal on 14.01.15.
  */
 public class MainWindow extends JFrame implements ActionListener {
 
-    private static final String PLAY_COMMMAND = "graj";
-    private static final String CLOSE_COMMMAND = "zamknij";
+    public static final Logger LOGGER = Logger.getLogger(MainWindow.class);
 
     private JButton playButton;
     private JButton closeButton;
 
+    private JButton settingsButton;
     private GameWindow gameWindow;
+
+    private SettingsWindow settingsWindow;
+    private ConnectionSettings settings;
 
     public MainWindow() {
         super("Zatacka");
@@ -31,37 +38,64 @@ public class MainWindow extends JFrame implements ActionListener {
 
         initGui();
 
-        playButton.setActionCommand(PLAY_COMMMAND);
+        settingsButton.setActionCommand(Commands.SETTINGS_COMMAND);
+        settingsButton.addActionListener(this);
+
+        playButton.setActionCommand(Commands.PLAY_COMMMAND);
         playButton.addActionListener(this);
-        closeButton.setActionCommand(CLOSE_COMMMAND);
+
+        closeButton.setActionCommand(Commands.CLOSE_COMMAND);
         closeButton.addActionListener(this);
+
+        settingsWindow = new SettingsWindow(this);
+        settingsWindow.setOkListener(this);
 
         gameWindow = new GameWindow(this);
     }
 
     private void initGui() {
-        setLayout(new FlowLayout(FlowLayout.CENTER));
-
-        JPanel panel = new JPanel();
-        add(panel);
+        Container pane = getContentPane();
+        LayoutManager boxLayout = new BoxLayout(pane, BoxLayout.Y_AXIS);
+        pane.setLayout(boxLayout);
 
         playButton = new JButton("Graj");
-        panel.add(playButton);
+        playButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pane.add(playButton);
+
+        settingsButton = new JButton("Ustawienia");
+        settingsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pane.add(settingsButton);
 
         closeButton = new JButton("Zamknij");
-        panel.add(closeButton);
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pane.add(closeButton);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
         switch (actionCommand) {
-            case PLAY_COMMMAND:
+            case Commands.PLAY_COMMMAND:
                 gameWindow.setVisible(true);
+                gameWindow.startMoving();
                 break;
-            case CLOSE_COMMMAND:
+            case Commands.SETTINGS_COMMAND:
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("ustawnienia");
+                }
+                settingsWindow.setVisible(true);
+                break;
+            case Commands.OK_COMMAND:
+                settings = settingsWindow.getSettings();
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("ustawnienia ok");
+                }
+                break;
+            case Commands.CLOSE_COMMAND:
                 dispose();
                 break;
+            default:
+                LOGGER.warn("nieznana komenda: " + actionCommand);
         }
     }
 }
