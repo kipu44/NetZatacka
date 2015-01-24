@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -114,7 +115,7 @@ public class MainWindow extends JFrame {
                 while (connections.size() < 9) {
                     textArea.append("Czekanie na klienta...\n");
                     scrollToBottom();
-                    connections.add(new ConnectionThread(null, serverSocket.accept()));
+                    connections.add(new ConnectionThread("Klient" + connections.size(), serverSocket.accept()));
                     textArea.append("Polaczono z klientem.\n");
                     scrollToBottom();
                 }
@@ -147,8 +148,13 @@ public class MainWindow extends JFrame {
         @Override
         public void run() {
             while (true) {
-                //TODO
-                // Komunikaty przychodzace od klienta.
+                try {
+                    if (in.ready()) {
+                        textArea.append(in.readLine());
+                    }
+                } catch (IOException ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                }
             }
         }
     }
