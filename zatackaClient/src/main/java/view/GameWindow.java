@@ -174,10 +174,16 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                 }
                 while (movingThreadRunning) {
                     if (leftKey) {
-                        moveLeft();
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("lewo");
+                        }
+                        socketManager.getOut().append("l");
                     }
                     if (rightKey) {
-                        moveRight();
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("prawo");
+                        }
+                        socketManager.getOut().append("r");
                     }
 
                     try {
@@ -245,19 +251,5 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start3");
         }
-    }
-
-    private void moveRight() {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("prawo");
-        }
-        socketManager.getOut().append("right");
-    }
-
-    private void moveLeft() {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("lewo");
-        }
-        socketManager.getOut().append("left");
     }
 }
