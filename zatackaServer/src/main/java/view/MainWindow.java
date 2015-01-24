@@ -1,5 +1,6 @@
 package view;
 
+import controller.Game;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
 
 public class MainWindow extends JFrame {
 
-    public static final Logger LOGGER = Logger.getLogger(MainWindow.class);
+    private static final Logger LOGGER = Logger.getLogger(MainWindow.class);
 
     //ServerSocket, Socket, Input and Output Streams
     private ServerSocket serverSocket = null;
@@ -116,12 +117,12 @@ public class MainWindow extends JFrame {
                     textArea.append("Czekanie na klienta...\n");
                     scrollToBottom();
                     connections.add(new ConnectionThread(connections.size(), serverSocket.accept()));
-                    
+
                     if (game == null) {
                         game = new Game();
                         game.run();
                     }
-                    
+
                     textArea.append("Polaczono z klientem.\n");
                     scrollToBottom();
                 }
@@ -159,15 +160,15 @@ public class MainWindow extends JFrame {
                 try {
                     if (game != null) {
                         //textArea.append(Double.toString(game.getPositions().get(id).getX()) + "/" + Double.toString(game.getPositions().get(id).getY()) + "\n");
-                        out.println(Integer.toString((int)game.getPositions().get(id).getX()) 
-                                + "/" + Integer.toString((int)game.getPositions().get(id).getY()) 
+                        out.println(Integer.toString((int)game.getPositions().get(id).getX())
+                                + "/" + Integer.toString((int)game.getPositions().get(id).getY())
                                 + "/" + Integer.toString(255));
                     }
-                    
+
                     if (in.ready()) {
                         String inLine = in.readLine();
                         textArea.append(inLine);
-                        
+
                         if ("l".equals(inLine)) {
                             game.rotateLeft(0);
                         } else if ("r".equals(inLine)) {

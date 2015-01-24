@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 /**
  *
- * @author Admin
+ * @author Lukasz
  */
 public class Point {
+
     private double x;
     private double y;
 
@@ -17,12 +13,12 @@ public class Point {
         this.x = x;
         this.y = y;
     }
-    
+
     public void translate(double x, double y) {
         this.x += x;
         this.y += y;
     }
-    
+
     public void rotate(double angle) {
         double s = Math.sin(angle);
         double c = Math.cos(angle);
@@ -39,6 +35,5 @@ public class Point {
     public double getY() {
         return y;
     }
-    
-    
+
 }

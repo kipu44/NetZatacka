@@ -11,7 +11,7 @@ import view.MainWindow;
  */
 public class Main implements Runnable {
 
-    public static final Logger LOGGER = Logger.getLogger(Main.class);
+    private static final Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Main());

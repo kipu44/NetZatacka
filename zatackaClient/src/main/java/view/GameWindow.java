@@ -202,6 +202,10 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                         int column = Integer.parseInt(rowInts[1]);
                         int color = Integer.parseInt(rowInts[2]);
 
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("x = " + row + ", y = " + column + ", color = " + color);
+                        }
+
                         image.setRGB(row, column, color);
                         refreshBoardImage();
                     } catch (IOException | NumberFormatException e) {
@@ -238,6 +242,10 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
     }
 
     private void createBoardImage(int newWidth, int newHeight) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("w = " + newWidth + ", h = " + newHeight);
+        }
+
         image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < newWidth; x++) {
             for (int y = 0; y < newHeight; y++) {
