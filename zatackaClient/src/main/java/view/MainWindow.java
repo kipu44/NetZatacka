@@ -52,6 +52,8 @@ public class MainWindow extends JFrame implements ActionListener {
         settingsWindow.setOkListener(this);
 
         gameWindow = new GameWindow(this);
+
+        settings=new ConnectionSettings();
     }
 
     private void initGui() {

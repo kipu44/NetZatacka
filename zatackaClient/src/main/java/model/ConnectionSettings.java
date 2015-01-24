@@ -15,6 +15,10 @@ public class ConnectionSettings {
         this.nick = nick;
     }
 
+    public ConnectionSettings() {
+        this("", 8080, "");
+    }
+
     public String getHost() {
         return host;
     }

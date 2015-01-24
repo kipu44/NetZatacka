@@ -175,6 +175,8 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             public void run() {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("start watku " + movingThreadRunning);
+                    LOGGER.debug(GameWindow.this.getKeyListeners());
+                    LOGGER.debug(GameWindow.this.board.getKeyListeners());
                 }
                 while (movingThreadRunning) {
                     boolean refresh = false;
