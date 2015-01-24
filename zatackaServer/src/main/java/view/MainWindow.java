@@ -13,7 +13,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,6 +29,7 @@ public class MainWindow extends JFrame {
     //ServerSocket, Socket, Input and Output Streams
     private ServerSocket serverSocket = null;
     private List<ConnectionThread> connections = new ArrayList<>();
+    private Game game;
 
     // Window info
     private Dimension screenSize;                                    // screen size
@@ -115,7 +115,13 @@ public class MainWindow extends JFrame {
                 while (connections.size() < 9) {
                     textArea.append("Czekanie na klienta...\n");
                     scrollToBottom();
-                    connections.add(new ConnectionThread("Klient" + connections.size(), serverSocket.accept()));
+                    connections.add(new ConnectionThread(connections.size(), serverSocket.accept()));
+                    
+                    if (game == null) {
+                        game = new Game();
+                        game.run();
+                    }
+                    
                     textArea.append("Polaczono z klientem.\n");
                     scrollToBottom();
                 }
@@ -127,12 +133,14 @@ public class MainWindow extends JFrame {
 
     private class ConnectionThread implements Runnable {
 
+        private int id;
         private Socket socket;
         private PrintWriter out;
         private BufferedReader in;
 
-        public ConnectionThread(String name, Socket socket) {
+        public ConnectionThread(int i, Socket socket) {
 
+            this.id = i;
             this.socket = socket;
 
             try {
@@ -142,15 +150,29 @@ public class MainWindow extends JFrame {
                 LOGGER.error(ex.getMessage(), ex);
             }
 
-            new Thread(this, name).start();
+            new Thread(this, Integer.toString(i)).start();
         }
 
         @Override
         public void run() {
             while (true) {
                 try {
+                    if (game != null) {
+                        //textArea.append(Double.toString(game.getPositions().get(id).getX()) + "/" + Double.toString(game.getPositions().get(id).getY()) + "\n");
+                        out.println(Integer.toString((int)game.getPositions().get(id).getX()) 
+                                + "/" + Integer.toString((int)game.getPositions().get(id).getY()) 
+                                + "/" + Integer.toString(255));
+                    }
+                    
                     if (in.ready()) {
-                        textArea.append(in.readLine());
+                        String inLine = in.readLine();
+                        textArea.append(inLine);
+                        
+                        if ("l".equals(inLine)) {
+                            game.rotateLeft(0);
+                        } else if ("r".equals(inLine)) {
+                            game.rotateRight(0);
+                        }
                     }
                 } catch (IOException ex) {
                     LOGGER.error(ex.getMessage(), ex);
