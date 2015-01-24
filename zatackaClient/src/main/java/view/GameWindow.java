@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -13,6 +12,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -29,17 +29,15 @@ import org.apache.log4j.Logger;
  */
 public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
+    private static final long serialVersionUID = -8526687153001631775L;
+
     public static final Logger LOGGER = Logger.getLogger(GameWindow.class);
 
-    private int width = 250;
-    private int height = 200;
-    private int y = width / 2;
-    private int x = height / 2;
+    private int width = 640;
+    private int height = 480;
 
     private boolean leftKey;
     private boolean rightKey;
-    private boolean downKey;
-    private boolean upKey;
 
     private JButton closeButton;
     private BufferedImage image;
@@ -52,7 +50,7 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
 
-        setSize(new Dimension(250, 250));
+        setSize(new Dimension(width + 50, height + 100));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(parent);
 
@@ -120,14 +118,11 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             LOGGER.debug("pressed");
         }
         boolean show = true;
-        if (e.getKeyChar() == 'f' && !leftKey) {
+        char keyChar = e.getKeyChar();
+        if (keyChar == 'f' && !leftKey) {
             leftKey = true;
-        } else if (e.getKeyChar() == 'g' && !rightKey) {
+        } else if (keyChar == 'g' && !rightKey) {
             rightKey = true;
-        } else if (e.getKeyChar() == 't' && !upKey) {
-            upKey = true;
-        } else if (e.getKeyChar() == 'v' && !downKey) {
-            downKey = true;
         } else {
             show = false;
         }
@@ -142,14 +137,11 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             LOGGER.debug("released");
         }
         boolean show = true;
-        if (e.getKeyChar() == 'f' && leftKey) {
+        char keyChar = e.getKeyChar();
+        if (keyChar == 'f' && leftKey) {
             leftKey = false;
-        } else if (e.getKeyChar() == 'g' && rightKey) {
+        } else if (keyChar == 'g' && rightKey) {
             rightKey = false;
-        } else if (e.getKeyChar() == 't' && upKey) {
-            upKey = false;
-        } else if (e.getKeyChar() == 'v' && downKey) {
-            downKey = false;
         } else {
             show = false;
         }
@@ -167,53 +159,31 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         }
     }
 
-    public void startMoving(ConnectionSettings settings) {
+    public void startMoving(ConnectionSettings settings) throws IOException {
         socketManager.createConnection(settings);
+        removeKeyListener(this);
+        addKeyListener(this);
 
-        Thread movingThread = new Thread(new Runnable() {
+        Thread readingThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("start watku " + movingThreadRunning);
-                    LOGGER.debug(GameWindow.this.getKeyListeners());
-                    LOGGER.debug(GameWindow.this.board.getKeyListeners());
+                    LOGGER.debug(getKeyListeners());
+                    LOGGER.debug(board.getKeyListeners());
                 }
                 while (movingThreadRunning) {
-                    boolean refresh = false;
                     if (leftKey) {
-                        x = (x - 1 + width) % width;
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("lewo");
                         }
-                        refresh = true;
+                        socketManager.getOut().append("l");
                     }
                     if (rightKey) {
-                        x = (x + 1) % width;
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("prawo");
                         }
-                        refresh = true;
-                    }
-
-                    if (upKey) {
-                        y = (y - 1 + height) % height;
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("gora");
-                        }
-                        refresh = true;
-                    }
-                    if (downKey) {
-                        y = (y + 1) % height;
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("dol");
-                        }
-                        refresh = true;
-                    }
-
-                    if (refresh) {
-                        image.setRGB(x, y, Color.RED.getRGB());
-                        Icon icon = new ImageIcon(image);
-                        board.setIcon(icon);
+                        socketManager.getOut().append("r");
                     }
 
                     try {
@@ -232,6 +202,28 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             }
         });
 
+        Thread writingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (movingThreadRunning) {
+                    try {
+                        String command = socketManager.getIn().readLine();
+                        String[] rowInts = command.split("/");
+
+                        int row = Integer.parseInt(rowInts[0]);
+                        int column = Integer.parseInt(rowInts[1]);
+                        int color = Integer.parseInt(rowInts[2]);
+
+                        image.setRGB(row, column, color);
+                        Icon icon = new ImageIcon(image);
+                        board.setIcon(icon);
+                    } catch (IOException | NumberFormatException e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                }
+            }
+        });
+
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start1");
         }
@@ -243,7 +235,8 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start2");
         }
-        movingThread.start();
+        readingThread.start();
+        writingThread.start();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start3");
         }

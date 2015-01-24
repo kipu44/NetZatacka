@@ -35,7 +35,7 @@ public class SettingsWindow extends JDialog implements ActionListener {
     public SettingsWindow(Window owner) {
         super(owner, "Ustawienia");
 
-        setSize(new Dimension(200, 250));
+        setSize(new Dimension(500, 200));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(owner);
 
