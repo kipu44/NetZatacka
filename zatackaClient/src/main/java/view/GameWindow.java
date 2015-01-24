@@ -20,6 +20,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
+import model.ConnectionSettings;
+import net.SocketManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -45,6 +47,8 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     private boolean movingThreadRunning;
 
+    private SocketManager socketManager;
+
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
 
@@ -66,6 +70,8 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                 movingThreadRunning = false;
             }
         });
+
+        socketManager = new SocketManager();
     }
 
     private void initGui() {
@@ -161,7 +167,9 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         }
     }
 
-    public void startMoving() {
+    public void startMoving(ConnectionSettings settings) {
+        socketManager.createConnection(settings);
+
         Thread movingThread = new Thread(new Runnable() {
             @Override
             public void run() {

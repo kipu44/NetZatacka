@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import model.ConnectionSettings;
+import net.SocketManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -77,7 +78,7 @@ public class MainWindow extends JFrame implements ActionListener {
         switch (actionCommand) {
             case Commands.PLAY_COMMMAND:
                 gameWindow.setVisible(true);
-                gameWindow.startMoving();
+                gameWindow.startMoving(settings);
                 break;
             case Commands.SETTINGS_COMMAND:
                 if (LOGGER.isDebugEnabled()) {
