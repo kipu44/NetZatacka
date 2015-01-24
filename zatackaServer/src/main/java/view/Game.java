@@ -64,6 +64,4 @@ public class Game implements Runnable{
     public synchronized void rotateRight(int i) {
         directions.get(i).rotate(-ROTATE);
     }
-    
-    
 }
