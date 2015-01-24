@@ -5,13 +5,13 @@
  */
 package net;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
-import java.util.logging.Level;
+import model.ConnectionSettings;
 import org.apache.log4j.Logger;
 
 /**
@@ -22,39 +22,42 @@ public class SocketManager {
     
     public static final Logger LOGGER = Logger.getLogger(SocketManager.class);
     
-    private ServerSocket serverSocket;
-    private List<Socket> clients;
-    private ObjectInputStream inputStream = null;
-    private ObjectOutputStream outputStream = null;
+    
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
 
     public SocketManager() {
     }
     
-    public void createServer(int port) {
+    public void createConnection(ConnectionSettings settings) {
         try {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Utworzono serwer na porice: " + port);
+                LOGGER.debug("Tworzenie polaczenia:" + settings.getHost() + ":" + settings.getPort());
             }
             
-            serverSocket = new ServerSocket(port);
+            socket = new Socket(settings.getHost(), settings.getPort());
+            out =  new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
      }
-    
-    public void waitForClient() {
-        try {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Serwer czeka na klienta");
-            }
-            
-            clients.add(serverSocket.accept());
-            
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Polaczono z klientem");
-            }
-        } catch (IOException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+
+    public PrintWriter getOut() {
+        return out;
+    }
+
+    public void setOut(PrintWriter out) {
+        this.out = out;
+    }
+
+    public BufferedReader getIn() {
+        return in;
+    }
+
+    public void setIn(BufferedReader in) {
+        this.in = in;
     }
 }
