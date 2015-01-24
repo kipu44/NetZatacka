@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -34,13 +33,9 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     private int width = 250;
     private int height = 200;
-    private int y = width / 2;
-    private int x = height / 2;
 
     private boolean leftKey;
     private boolean rightKey;
-    private boolean downKey;
-    private boolean upKey;
 
     private JButton closeButton;
     private BufferedImage image;
@@ -121,14 +116,11 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             LOGGER.debug("pressed");
         }
         boolean show = true;
-        if (e.getKeyChar() == 'f' && !leftKey) {
+        char keyChar = e.getKeyChar();
+        if (keyChar == 'f' && !leftKey) {
             leftKey = true;
-        } else if (e.getKeyChar() == 'g' && !rightKey) {
+        } else if (keyChar == 'g' && !rightKey) {
             rightKey = true;
-        } else if (e.getKeyChar() == 't' && !upKey) {
-            upKey = true;
-        } else if (e.getKeyChar() == 'v' && !downKey) {
-            downKey = true;
         } else {
             show = false;
         }
@@ -143,14 +135,11 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             LOGGER.debug("released");
         }
         boolean show = true;
-        if (e.getKeyChar() == 'f' && leftKey) {
+        char keyChar = e.getKeyChar();
+        if (keyChar == 'f' && leftKey) {
             leftKey = false;
-        } else if (e.getKeyChar() == 'g' && rightKey) {
+        } else if (keyChar == 'g' && rightKey) {
             rightKey = false;
-        } else if (e.getKeyChar() == 't' && upKey) {
-            upKey = false;
-        } else if (e.getKeyChar() == 'v' && downKey) {
-            downKey = false;
         } else {
             show = false;
         }
@@ -170,51 +159,23 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
 
     public void startMoving(ConnectionSettings settings) throws IOException {
         socketManager.createConnection(settings);
+        removeKeyListener(this);
+        addKeyListener(this);
 
-        Thread movingThread = new Thread(new Runnable() {
+        Thread readingThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("start watku " + movingThreadRunning);
-                    LOGGER.debug(GameWindow.this.getKeyListeners());
-                    LOGGER.debug(GameWindow.this.board.getKeyListeners());
+                    LOGGER.debug(getKeyListeners());
+                    LOGGER.debug(board.getKeyListeners());
                 }
                 while (movingThreadRunning) {
-                    boolean refresh = false;
                     if (leftKey) {
-                        x = (x - 1 + width) % width;
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("lewo");
-                        }
-                        refresh = true;
+                        moveLeft();
                     }
                     if (rightKey) {
-                        x = (x + 1) % width;
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("prawo");
-                        }
-                        refresh = true;
-                    }
-
-                    if (upKey) {
-                        y = (y - 1 + height) % height;
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("gora");
-                        }
-                        refresh = true;
-                    }
-                    if (downKey) {
-                        y = (y + 1) % height;
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("dol");
-                        }
-                        refresh = true;
-                    }
-
-                    if (refresh) {
-                        image.setRGB(x, y, Color.RED.getRGB());
-                        Icon icon = new ImageIcon(image);
-                        board.setIcon(icon);
+                        moveRight();
                     }
 
                     try {
@@ -233,6 +194,39 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
             }
         });
 
+        Thread writingThread = new Thread(new Runnable() {
+            private int row;
+            private int column;
+            private int color;
+
+            @Override
+            public void run() {
+                while (movingThreadRunning) {
+                    try {
+                        if (row == -1) {
+                            row = socketManager.getIn().read();
+                        }
+                        if (column == -1) {
+                            column = socketManager.getIn().read();
+                        }
+                        if (color == -1) {
+                            color = socketManager.getIn().read();
+                        }
+
+                        image.setRGB(row, column, color);
+                        Icon icon = new ImageIcon(image);
+                        board.setIcon(icon);
+
+                        row = -1;
+                        column = -1;
+                        color = -1;
+                    } catch (IOException e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                }
+            }
+        });
+
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start1");
         }
@@ -244,9 +238,24 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start2");
         }
-        movingThread.start();
+        readingThread.start();
+        writingThread.start();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start3");
         }
+    }
+
+    private void moveRight() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("prawo");
+        }
+        socketManager.getOut().append("right");
+    }
+
+    private void moveLeft() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("lewo");
+        }
+        socketManager.getOut().append("left");
     }
 }

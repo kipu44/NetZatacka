@@ -28,7 +28,7 @@ public class SocketManager {
     public void createConnection(ConnectionSettings settings) throws IOException {
         try {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Tworzenie polaczenia:" + settings.getHost() + ":" + settings.getPort());
+                LOGGER.debug("Tworzenie polaczenia: " + settings.getHost() + "::" + settings.getPort());
             }
             
             socket = new Socket(settings.getHost(), settings.getPort());
