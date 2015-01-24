@@ -13,6 +13,9 @@ public class Main implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Main.class);
 
+    private Main() {
+    }
+
     public static void main(String[] args) {
         EventQueue.invokeLater(new Main());
     }

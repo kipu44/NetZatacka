@@ -1,9 +1,13 @@
 package model;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Lukasz
  */
 public class Point {
+
+    private static final Logger LOGGER = Logger.getLogger(Point.class);
 
     private double x;
     private double y;
@@ -30,6 +34,14 @@ public class Point {
             this.x = x;
             this.y = y;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+                "x=" + x +
+                ", y=" + y +
+                "}";
     }
 
     @Override

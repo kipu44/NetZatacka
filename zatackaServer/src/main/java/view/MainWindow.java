@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -23,21 +24,24 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import model.Player;
 import model.Point;
 import org.apache.log4j.Logger;
 
 public class MainWindow extends JFrame {
 
+    private static final long serialVersionUID = -2070331732816354501L;
+
     private static final Logger LOGGER = Logger.getLogger(MainWindow.class);
 
-    public static final int WIDTH = 600;
-    public static final int HEIGHT = 600;
+    public static final int WIDTH = 480;
+    public static final int HEIGHT = 480;
 
     //ServerSocket, Socket, Input and Output Streams
     private ServerSocket serverSocket = null;
-    private List<ConnectionThread> connections = new ArrayList<>();
+    private final Collection<ConnectionThread> connections = new ArrayList<>();
     private Game game;
-    CountDownLatch barrier;
+    private CountDownLatch barrier;
 
     // Window info
     private Dimension screenSize;                                    // screen size
@@ -110,7 +114,7 @@ public class MainWindow extends JFrame {
 
     private class CreateServerThread implements Runnable {
 
-        public CreateServerThread(String name) {
+        private CreateServerThread(String name) {
             new Thread(this, name).start();
         }
 
@@ -151,8 +155,9 @@ public class MainWindow extends JFrame {
         private PrintWriter out;
         private BufferedReader in;
 
-        public ConnectionThread(int i, Socket socket) {
+        private boolean running = true;
 
+        private ConnectionThread(int i, Socket socket) {
             this.id = i;
             this.socket = socket;
 
@@ -170,14 +175,19 @@ public class MainWindow extends JFrame {
         public void run() {
             out.println(Integer.toString(WIDTH) + "/" + Integer.toString(HEIGHT));
 
-            while (true) {
+            while (running) {
                 try {
                     for (int i = 0; i < game.getPlayers().size(); i++) {
-                        Point lastPlayerPosition = game.getPlayers().get(i).getLastPosition();
-                        String x = Integer.toString((int) lastPlayerPosition.getX());
-                        String y = Integer.toString((int) lastPlayerPosition.getY());
-                        String c = Integer.toString(255);
-                        out.println(x + "/" + y + "/" + c);
+                        Player player = game.getPlayers().get(i);
+                        Point lastPlayerPosition = player.getLastPosition();
+                        if (lastPlayerPosition == null) {
+                            LOGGER.error("gracz: " + player);
+                        } else {
+                            int x = (int) lastPlayerPosition.getX();
+                            int y = (int) lastPlayerPosition.getY();
+                            int c = 255;
+                            out.println(x + "/" + y + "/" + c);
+                        }
                     }
 
                     if (in.ready()) {
@@ -198,5 +208,12 @@ public class MainWindow extends JFrame {
                 }
             }
         }
+
+        @Override
+        protected void finalize() throws Throwable {
+            running = false;
+            super.finalize();
+        }
+
     }
 }
