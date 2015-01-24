@@ -35,7 +35,7 @@ public class MainWindow extends JFrame implements ActionListener {
     public MainWindow() {
         super("Zatacka");
 
-        setSize(new Dimension(200, 300));
+        setSize(new Dimension(200, 100));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
