@@ -1,24 +1,27 @@
 package view;
 
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import net.SocketManager;
 import org.apache.log4j.Logger;
@@ -26,7 +29,7 @@ import org.apache.log4j.Logger;
 /**
  * Created by rafal on 14.01.15.
  */
-public class GameWindow extends JDialog implements ActionListener, KeyListener {
+public class GameWindow extends JDialog implements ActionListener {
 
     private static final long serialVersionUID = -8526687153001631775L;
 
@@ -43,6 +46,9 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
     private JLabel board;
 
     private boolean movingThreadRunning;
+    private JPanel panel;
+    private final KeyStroke leftStroke;
+    private final KeyStroke rightStroke;
 
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
@@ -56,8 +62,6 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         closeButton.setActionCommand(Commands.CLOSE_COMMAND);
         closeButton.addActionListener(this);
 
-        addKeyListener(this);
-
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -65,21 +69,31 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
                 movingThreadRunning = false;
             }
         });
+
+        int condition = JPanel.WHEN_IN_FOCUSED_WINDOW;
+        InputMap inputMap = panel.getInputMap(condition);
+
+        leftStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, 0);
+        rightStroke = KeyStroke.getKeyStroke(KeyEvent.VK_G, 0);
+        inputMap.put(leftStroke, leftStroke.toString());
+        inputMap.put(rightStroke, rightStroke.toString());
     }
 
     private void initGui() {
-        Container pane = getContentPane();
-        LayoutManager boxLayout = new BoxLayout(pane, BoxLayout.Y_AXIS);
-        pane.setLayout(boxLayout);
+        panel = new JPanel();
+        getContentPane().add(panel);
+
+        LayoutManager boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
+        panel.setLayout(boxLayout);
 
         board = new JLabel();
         createBoardImage(width, height);
         board.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pane.add(board);
+        panel.add(board);
 
         closeButton = new JButton("Zamknij");
         closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pane.add(closeButton);
+        panel.add(closeButton);
     }
 
     @Override
@@ -96,69 +110,28 @@ public class GameWindow extends JDialog implements ActionListener, KeyListener {
         }
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-//        showKey(e, "typed");
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("pressed");
-        }
-        boolean show = true;
-        char keyChar = e.getKeyChar();
-        if (keyChar == 'f' && !leftKey) {
-            leftKey = true;
-        } else if (keyChar == 'g' && !rightKey) {
-            rightKey = true;
-        } else {
-            show = false;
-        }
-        if (show) {
-            showKey(e, "pressed");
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("released");
-        }
-        boolean show = true;
-        char keyChar = e.getKeyChar();
-        if (keyChar == 'f' && leftKey) {
-            leftKey = false;
-        } else if (keyChar == 'g' && rightKey) {
-            rightKey = false;
-        } else {
-            show = false;
-        }
-        if (show) {
-            showKey(e, "released");
-        }
-    }
-
-    private static void showKey(KeyEvent e, String pressed) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(pressed + " ext: " + e.getExtendedKeyCode());
-            LOGGER.debug(pressed + " char: " + e.getKeyChar());
-            LOGGER.debug(pressed + " int: " + e.getKeyCode());
-            LOGGER.debug(pressed + " loc: " + e.getKeyLocation());
-        }
-    }
-
     public void startMoving(SocketManager socketManager) throws IOException {
-        removeKeyListener(this);
-        addKeyListener(this);
+        ActionMap actionMap = panel.getActionMap();
+        actionMap.put(leftStroke.toString(), new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                socketManager.getOut().println("l");
+            }
+        });
+        actionMap.put(rightStroke.toString(), new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                socketManager.getOut().println("r");
+            }
+        });
 
         Thread readingThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("start watku " + movingThreadRunning);
-                    LOGGER.debug(getKeyListeners());
-                    LOGGER.debug(board.getKeyListeners());
                 }
                 while (movingThreadRunning) {
                     if (leftKey) {

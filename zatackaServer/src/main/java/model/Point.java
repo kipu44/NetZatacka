@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Locale;
 import org.apache.log4j.Logger;
 
 /**
@@ -17,43 +18,36 @@ public class Point {
         this.y = y;
     }
 
-    public Point translatedPoint(double x, double y) {
-        synchronized (this) {
-            return new Point(this.x + x, this.y + y);
-        }
+    public synchronized Point translatedPoint(double dx, double dy) {
+        return new Point(x + dx, y + dy);
     }
 
     public synchronized void rotate(double angle) {
-        synchronized (this) {
-            double s = StrictMath.sin(angle);
-            double c = StrictMath.cos(angle);
+        double s = StrictMath.sin(angle);
+        double c = StrictMath.cos(angle);
 
-            double x = this.x * c - this.y * s;
-            double y = this.x * s + this.y * c;
+        double newX = x * c - y * s;
+        double newY = x * s + y * c;
 
-            this.x = x;
-            this.y = y;
-        }
+        x = newX;
+        y = newY;
     }
 
     @Override
     public String toString() {
-        return "Point{" +
-                "x=" + x +
-                ", y=" + y +
-                "}";
+        return String.format(Locale.ENGLISH, "Point{x=%.3f, y=%.3f}", x, y);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof Point)) {
+        if (!(obj instanceof Point)) {
             return false;
         }
 
-        Point point = (Point) o;
+        Point point = (Point) obj;
 
         if (Double.compare(point.x, x) != 0) {
             return false;
@@ -77,14 +71,10 @@ public class Point {
     }
 
     public synchronized double getX() {
-        synchronized (this) {
-            return x;
-        }
+        return x;
     }
 
     public synchronized double getY() {
-        synchronized (this) {
-            return y;
-        }
+        return y;
     }
 }

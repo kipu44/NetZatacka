@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import model.Player;
@@ -14,7 +15,7 @@ public class Game implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Game.class);
 
-    private static final double ROTATE = 0.25f;
+    private static final double ROTATE = 0.25;
     private static final Random RANDOM = new Random();
 
     private final int width;
@@ -36,22 +37,24 @@ public class Game implements Runnable {
     public void run() {
         while (running) {
             long newTime = System.nanoTime();
-            float deltaTime = (newTime - lastTime) / 1.0E08f;
+            float deltaTime = 1.0E-08f * (newTime - lastTime);
             lastTime = newTime;
             for (Player player : players) {
-                Point lastPosition = player.getLastPosition();
+                synchronized (players) {
+                    Point lastPosition = player.getLastPosition();
 
-                double x = player.getDirection().getX() * deltaTime;
-                double y = player.getDirection().getY() * deltaTime;
-                Point newPosition = lastPosition.translatedPoint(x, y);
+                    double x = player.getDirection().getX() * deltaTime;
+                    double y = player.getDirection().getY() * deltaTime;
+                    Point newPosition = lastPosition.translatedPoint(x, y);
 
-                if (collision(newPosition)) {
-                    players.remove(player);
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("gracz przegral (" + player + ")");
+                    if (collision(newPosition)) {
+                        players.remove(player);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("gracz przegral (" + player + ")");
+                        }
+                    } else {
+                        player.addPosition(newPosition);
                     }
-                } else {
-                    player.addPosition(newPosition);
                 }
             }
 
@@ -73,15 +76,37 @@ public class Game implements Runnable {
             if (x < 0 || x >= width || y < 0 || y >= height) {
                 return true;
             }
+
+            Collection<Point> surrounding = createSurrounding(x, y);
             for (Player player : players) {
                 for (Point point : player.getPositions()) {
-                    if (position.equals(point)) {
-                        return true;
+                    for (Point position1 : surrounding) {
+                        if (position1.equals(point)) {
+                            return true;
+                        }
                     }
                 }
             }
             return false;
         }
+    }
+
+    private Collection<Point> createSurrounding(double x, double y) {
+        Collection<Point> surrounding = new ArrayList<>(5);
+        surrounding.add(new Point(x, y));
+        if (x > 1) {
+            surrounding.add(new Point(x - 1, y));
+        }
+        if (x < width - 1) {
+            surrounding.add(new Point(x + 1, y));
+        }
+        if (y > 1) {
+            surrounding.add(new Point(x, y - 1));
+        }
+        if (y < height - 1) {
+            surrounding.add(new Point(x, y + 1));
+        }
+        return surrounding;
     }
 
     @Override

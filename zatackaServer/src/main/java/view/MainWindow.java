@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import model.Player;
 import model.Point;
 import org.apache.log4j.Logger;
@@ -69,7 +70,7 @@ public class MainWindow extends JFrame {
         setSize(width / 3, height / 3);
         setResizable(true);
         setTitle("Server Interface");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -150,25 +151,21 @@ public class MainWindow extends JFrame {
 
     private class ConnectionThread implements Runnable {
 
-        private int id;
-        private Socket socket;
+        private final int id;
+        private final Socket socket;
         private PrintWriter out;
         private BufferedReader in;
 
         private boolean running = true;
 
-        private ConnectionThread(int i, Socket socket) {
-            this.id = i;
+        private ConnectionThread(int id, Socket socket) throws IOException {
+            this.id = id;
             this.socket = socket;
 
-            try {
-                out = new PrintWriter(socket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            } catch (IOException ex) {
-                LOGGER.error(ex.getMessage(), ex);
-            }
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            new Thread(this, Integer.toString(i)).start();
+            new Thread(this, Integer.toString(id)).start();
         }
 
         @Override
