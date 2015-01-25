@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import model.Player;
 import model.Point;
 import org.apache.log4j.Logger;
@@ -24,7 +25,7 @@ public class Game implements Runnable {
     private boolean running = true;
 
     private long lastTime;
-    private final List<Player> players = new ArrayList<>();
+    private final List<Player> players = new CopyOnWriteArrayList<>();
 
     public Game(int width, int height) {
         this.width = width;
@@ -40,21 +41,19 @@ public class Game implements Runnable {
             float deltaTime = 1.0E-08f * (newTime - lastTime);
             lastTime = newTime;
             for (Player player : players) {
-                synchronized (players) {
-                    Point lastPosition = player.getLastPosition();
+                Point lastPosition = player.getLastPosition();
 
-                    double x = player.getDirection().getX() * deltaTime;
-                    double y = player.getDirection().getY() * deltaTime;
-                    Point newPosition = lastPosition.translatedPoint(x, y);
+                double x = player.getDirection().getX() * deltaTime;
+                double y = player.getDirection().getY() * deltaTime;
+                Point newPosition = lastPosition.translatedPoint(x, y);
 
-                    if (collision(newPosition)) {
-                        players.remove(player);
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("gracz przegral (" + player + ")");
-                        }
-                    } else {
-                        player.addPosition(newPosition);
+                if (collision(newPosition)) {
+                    players.remove(player);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("gracz przegral (" + player + ")");
                     }
+                } else {
+                    player.addPosition(newPosition);
                 }
             }
 
