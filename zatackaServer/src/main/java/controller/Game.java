@@ -31,7 +31,6 @@ public class Game implements Runnable {
         this.width = width;
         this.height = height;
         lastTime = System.nanoTime();
-        addPlayer();
     }
 
     @Override
@@ -67,6 +66,7 @@ public class Game implements Runnable {
 //                LOGGER.error(e, e);
 //            }
         }
+        
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("koniec gry");
         }
@@ -104,7 +104,7 @@ public class Game implements Runnable {
             double c = StrictMath.cos(angle);
             Point direction = new Point(s, c);
             Point position = new Point(RANDOM.nextInt(width), RANDOM.nextInt(height));
-            players.add(new Player(direction, position));
+            players.add(new Player(direction, position, height, width));
         }
     }
 
