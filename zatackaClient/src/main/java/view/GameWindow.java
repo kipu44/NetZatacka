@@ -164,23 +164,32 @@ public class GameWindow extends JDialog implements ActionListener {
         });
 
         Thread writingThread = new Thread(new Runnable() {
+            public boolean refreshBoard = false;
+
             @Override
             public void run() {
                 while (movingThreadRunning) {
                     try {
                         String command = socketManager.getIn().readLine();
-                        String[] rowInts = command.split("/");
-
-                        int row = Integer.parseInt(rowInts[0]);
-                        int column = Integer.parseInt(rowInts[1]);
-                        int color = Integer.parseInt(rowInts[2]);
-
-                        if (row < image.getWidth() && column < image.getHeight()) {
-                            image.setRGB(row, column, color);
+                        if (command.equals("kasztan")) {
+                            refreshBoard = true;
                         } else {
-                            LOGGER.error("x = " + row + ", y = " + column + ", color = " + color);
+                            String[] rowInts = command.split("/");
+
+                            int row = Integer.parseInt(rowInts[0]);
+                            int column = Integer.parseInt(rowInts[1]);
+                            int color = Integer.parseInt(rowInts[2]);
+
+                            if (row < image.getWidth() && column < image.getHeight()) {
+                                image.setRGB(row, column, color);
+                            } else {
+                                LOGGER.error("x = " + row + ", y = " + column + ", color = " + color);
+                            }
                         }
-                        refreshBoardImage();
+
+                        if (refreshBoard) {
+                            refreshBoardImage();
+                        }
                     } catch (IOException | NumberFormatException e) {
                         LOGGER.error(e.getMessage(), e);
                     }
