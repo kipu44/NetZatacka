@@ -116,50 +116,14 @@ public class GameWindow extends JDialog implements ActionListener {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                socketManager.getOut().println("l");
+                socketManager.getOut().println("r");
             }
         });
         actionMap.put(rightStroke.toString(), new AbstractAction() {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                socketManager.getOut().println("r");
-            }
-        });
-
-        Thread readingThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("start watku " + movingThreadRunning);
-                }
-                while (movingThreadRunning) {
-                    if (leftKey) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("lewo");
-                        }
-                        socketManager.getOut().println("l");
-                    }
-                    if (rightKey) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("prawo");
-                        }
-                        socketManager.getOut().println("r");
-                    }
-
-                    try {
-//                        if (LOGGER.isDebugEnabled()) {
-//                            LOGGER.debug("sleep");
-//                        }
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        LOGGER.error("sleep-error: " + e.getMessage(), e);
-                    }
-                }
-
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("koniec watku");
-                }
+                socketManager.getOut().println("l");
             }
         });
 
@@ -190,13 +154,16 @@ public class GameWindow extends JDialog implements ActionListener {
 
                             double[] vector = new double[] {oldRow - row, oldColumn - column};
                             double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
+                            magnitude = StrictMath.sqrt(magnitude);
+                            magnitude *= 0.01;
                             vector[0] /= magnitude;
                             vector[1] /= magnitude;
                             for (double x = row, y = column;
                                  x <= oldRow && y <= oldColumn;
                                  x += vector[0], y += vector[1]) {
                                 drawPoint((int) x, (int) y, color);
-                            }
+                            }//*/
+                            drawPoint(row, column, color);
 
                             oldRow = row;
                             oldColumn = column;
