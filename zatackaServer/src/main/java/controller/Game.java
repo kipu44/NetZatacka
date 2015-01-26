@@ -1,7 +1,5 @@
 package controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -49,7 +47,7 @@ public class Game implements Runnable {
                     double y = player.getDirection().getY() * deltaTime;
                     Point newPosition = lastPosition.translatedPoint(x, y);
 
-                    if (collision(newPosition, player)) {
+                    if (collision(newPosition)) {
                         player.setAlive(false);
                         //players.remove(player);
                         if (LOGGER.isDebugEnabled()) {
@@ -72,19 +70,16 @@ public class Game implements Runnable {
         }
     }
 
-    private boolean collision(Point position, Player currentPlayer) {
+    private boolean collision(Point position) {
         synchronized (players) {
-            double x = position.getX();
-            double y = position.getY();
-            if (x < 0 || x >= width || y < 0 || y >= height) {
-                return true;
-            }
-
+            int x = (int) position.getX();
+            int y = (int) position.getY();
             for (Player player : players) {
-                for (Point point : player.getPositions()) {
-                    if (position.equals(point) && currentPlayer != player) {
-                        return true;
-                    }
+                boolean[][] visited = player.getVisited();
+                int x1 = (int) position.getX();
+                int y1 = (int) position.getY();
+                if (x != x1 && y != y1 && visited[x1][y1]) {
+                    return true;
                 }
             }
             return false;
@@ -98,13 +93,13 @@ public class Game implements Runnable {
     }
 
     public final void addPlayer() {
+        double angle = Math.toRadians(RANDOM.nextInt(360));
+        double s = StrictMath.sin(angle);
+        double c = StrictMath.cos(angle);
+        Point direction = new Point(s, c);
+        Point position = new Point(RANDOM.nextInt(width - 2) + 1, RANDOM.nextInt(height - 2) + 1);
         synchronized (players) {
-            double angle = Math.toRadians(RANDOM.nextInt(360));
-            double s = StrictMath.sin(angle);
-            double c = StrictMath.cos(angle);
-            Point direction = new Point(s, c);
-            Point position = new Point(RANDOM.nextInt(width), RANDOM.nextInt(height));
-            players.add(new Player(direction, position));
+            players.add(new Player(direction, position, width, height));
         }
     }
 

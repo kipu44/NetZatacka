@@ -212,7 +212,7 @@ public class GameWindow extends JDialog implements ActionListener {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start2");
         }
-        readingThread.start();
+//        readingThread.start();
         writingThread.start();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("start3");

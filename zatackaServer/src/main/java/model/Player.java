@@ -71,4 +71,7 @@ public class Player {
         this.alive = alive;
     }
 
+    public boolean[][] getVisited() {
+        return visited;
+    }
 }
