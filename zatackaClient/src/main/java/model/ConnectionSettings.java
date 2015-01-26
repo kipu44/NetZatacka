@@ -16,7 +16,7 @@ public class ConnectionSettings {
     }
 
     public ConnectionSettings() {
-        this("", 8080, "");
+        this("127.0.0.1", 9876, "");
     }
 
     public String getHost() {

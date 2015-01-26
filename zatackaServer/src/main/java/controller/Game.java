@@ -41,27 +41,31 @@ public class Game implements Runnable {
             float deltaTime = 1.0E-08f * (newTime - lastTime);
             lastTime = newTime;
             for (Player player : players) {
-                Point lastPosition = player.getLastPosition();
+                
+                if (player.isAlive()) {
+                    Point lastPosition = player.getLastPosition();
 
-                double x = player.getDirection().getX() * deltaTime;
-                double y = player.getDirection().getY() * deltaTime;
-                Point newPosition = lastPosition.translatedPoint(x, y);
+                    double x = player.getDirection().getX() * deltaTime;
+                    double y = player.getDirection().getY() * deltaTime;
+                    Point newPosition = lastPosition.translatedPoint(x, y);
 
-                if (collision(newPosition)) {
-                    players.remove(player);
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("gracz przegral (" + player + ")");
+                    if (collision(newPosition)) {
+                        player.setAlive(false);
+                        //players.remove(player);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("gracz przegral (" + player + ")");
+                        }
+                    } else {
+                        player.addPosition(newPosition);
                     }
-                } else {
-                    player.addPosition(newPosition);
                 }
             }
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                LOGGER.error(e, e);
-            }
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                LOGGER.error(e, e);
+//            }
         }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("koniec gry");

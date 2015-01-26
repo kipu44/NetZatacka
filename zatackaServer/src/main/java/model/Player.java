@@ -13,11 +13,13 @@ public class Player {
 
     private final Point direction;
     private final List<Point> positions;
+    private boolean alive;
 
     public Player(Point direction, Point position) {
         this.direction = direction;
         positions = new ArrayList<>();
         positions.add(position);
+        alive = true;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class Player {
         return "Player{" +
                 "direction=" + direction +
                 ", positions=" + positions +
-                "}";
+                ", isAlive=" + alive + "}";
     }
 
     public Point getDirection() {
@@ -43,4 +45,13 @@ public class Player {
     public List<Point> getPositions() {
         return positions;
     }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean isAlive) {
+        this.alive = isAlive;
+    }
+    
 }

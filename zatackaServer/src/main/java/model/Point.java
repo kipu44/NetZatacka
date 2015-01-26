@@ -49,10 +49,10 @@ public class Point {
 
         Point point = (Point) obj;
 
-        if (Double.compare(point.x, x) != 0) {
+        if ((int) point.x != (int) x) {
             return false;
         }
-        if (Double.compare(point.y, y) != 0) {
+        if ((int) point.y != (int) y) {
             return false;
         }
 
