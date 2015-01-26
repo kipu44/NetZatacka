@@ -41,7 +41,7 @@ public class Game implements Runnable {
             float deltaTime = 1.0E-08f * (newTime - lastTime);
             lastTime = newTime;
             for (Player player : players) {
-                
+
                 if (player.isAlive()) {
                     Point lastPosition = player.getLastPosition();
 
@@ -80,36 +80,15 @@ public class Game implements Runnable {
                 return true;
             }
 
-            Collection<Point> surrounding = createSurrounding(x, y);
             for (Player player : players) {
                 for (Point point : player.getPositions()) {
-                    for (Point position1 : surrounding) {
-                        if (position1.equals(point)) {
-                            return true;
-                        }
+                    if (position.equals(point)) {
+                        return true;
                     }
                 }
             }
             return false;
         }
-    }
-
-    private Collection<Point> createSurrounding(double x, double y) {
-        Collection<Point> surrounding = new ArrayList<>(5);
-        surrounding.add(new Point(x, y));
-        if (x > 1) {
-            surrounding.add(new Point(x - 1, y));
-        }
-        if (x < width - 1) {
-            surrounding.add(new Point(x + 1, y));
-        }
-        if (y > 1) {
-            surrounding.add(new Point(x, y - 1));
-        }
-        if (y < height - 1) {
-            surrounding.add(new Point(x, y + 1));
-        }
-        return surrounding;
     }
 
     @Override
