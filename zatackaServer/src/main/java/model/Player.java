@@ -37,7 +37,8 @@ public class Player {
         return "Player{" +
                 "direction=" + direction +
                 ", positions=" + positions +
-                ", isAlive=" + alive + "}";
+                ", alive=" + alive +
+                "}";
     }
 
     public Point getDirection() {
