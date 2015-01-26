@@ -95,7 +95,8 @@ public class Game implements Runnable {
             int y = (int) position.getY();
             for (Player player : players) {
                 boolean[][] visited = player.getVisited();
-                if (visited[x][y]) {
+                Point lastPosition = player.getLastPosition();
+                if (visited[x][y] && ((int) lastPosition.getX() != x || (int) lastPosition.getY() != y)) {
                     return true;
                 }
             }
