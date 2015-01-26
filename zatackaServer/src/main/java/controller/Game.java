@@ -66,14 +66,11 @@ public class Game implements Runnable {
 
                         if (collision(newPosition)) {
                             player.setAlive(false);
-                            if (collision(newPosition)) {
-                                player.setAlive(false);
-                                if (LOGGER.isDebugEnabled()) {
-                                    LOGGER.debug("gracz przegral (" + player + ")");
-                                }
-                            } else {
-                                player.addPosition(newPosition);
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("gracz przegral (" + player + ")");
                             }
+                        } else {
+                            player.addPosition(newPosition);
                         }
                     }
                 }

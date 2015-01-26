@@ -188,7 +188,7 @@ public class GameWindow extends JDialog implements ActionListener {
 
                             }
 
-                            double[] vector = new double[] {row - oldRow, column - oldColumn};
+                            /*double[] vector = new double[] {row - oldRow, column - oldColumn};
                             double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
                             vector[0] /= magnitude;
                             vector[1] /= magnitude;
@@ -196,7 +196,8 @@ public class GameWindow extends JDialog implements ActionListener {
                                  x <= oldRow && y <= oldColumn;
                                  x += vector[0], y += vector[1]) {
                                 drawPoint((int) x, (int) y, color);
-                            }
+                            }*/
+                            drawPoint(row, column, color);
 
                             oldRow = row;
                             oldColumn = column;
