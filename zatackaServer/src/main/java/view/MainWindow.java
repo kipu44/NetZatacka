@@ -39,10 +39,10 @@ public class MainWindow extends JFrame {
     public static final int HEIGHT = 480;
 
     public static final int[] COLORS = {
-        0x0000FF00,
-        0x00FF00FF,
-        0x00AAAAAA,
-        0x00AAAA00
+        0xFF00FF00,
+        0xFFFF00FF,
+        0xFFAAAAAA,
+        0xFFAAAA00
     };
 
     //ServerSocket, Socket, Input and Output Streams
@@ -218,7 +218,7 @@ public class MainWindow extends JFrame {
                     }
 
                     barrier.countDown();
-                    barrier.await(50, TimeUnit.MILLISECONDS);
+                    barrier.await(20, TimeUnit.MILLISECONDS);
                 } catch (IOException | InterruptedException ex) {
                     LOGGER.error(ex.getMessage(), ex);
                 }

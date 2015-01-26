@@ -28,40 +28,49 @@ public class Game implements Runnable {
     public Game(int width, int height) {
         this.width = width;
         this.height = height;
-        lastTime = System.nanoTime();
+
     }
 
     @Override
     public void run() {
+
+        lastTime = System.nanoTime();
+        final double amountOfTicks = 60.0;
+        final double deltaTime = 1 / 120.0;
+        double ns = 1000000000 / amountOfTicks;
+        double delta = 0;
         while (running) {
             long newTime = System.nanoTime();
-            float deltaTime = 5.0E-08f * (newTime - lastTime);
+            delta += (newTime - lastTime) / ns;
             lastTime = newTime;
-            for (Player player : players) {
 
-                if (player.isAlive()) {
-                    Point lastPosition = player.getLastPosition();
+            if (delta > 1) {
+                for (Player player : players) {
 
+                    if (player.isAlive()) {
+                        Point lastPosition = player.getLastPosition();
 
-                    double x = player.getDirection().getX() * deltaTime;
-                    double y = player.getDirection().getY() * deltaTime;
-                    Point newPosition = lastPosition.translatedPoint(x, y);
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug(String.format("Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
-                                                   x,
-                                                   y,
-                                                   deltaTime,
-                                                   newPosition.getX(),
-                                                   newPosition.getY()));
-                    }
-
-                    if (collision(newPosition)) {
-                        player.setAlive(false);
+                        double x = player.getDirection().getX() * deltaTime;
+                        double y = player.getDirection().getY() * deltaTime;
+                        Point newPosition = lastPosition.translatedPoint(x, y);
                         if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("gracz przegral (" + player + ")");
+                            LOGGER.debug(String.format("Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
+                                    x,
+                                    y,
+                                    deltaTime,
+                                    newPosition.getX(),
+                                    newPosition.getY()));
                         }
-                    } else {
-                        player.addPosition(newPosition);
+
+                        if (collision(newPosition)) {
+                            player.setAlive(false);
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("gracz przegral (" + player + ")");
+                            }
+                        } else 
+                        {
+                            player.addPosition(newPosition);
+                        }
                     }
                 }
             }
