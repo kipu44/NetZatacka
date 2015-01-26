@@ -48,7 +48,6 @@ public class Game implements Runnable {
 
                     if (collision(newPosition)) {
                         player.setAlive(false);
-                        //players.remove(player);
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("gracz przegral (" + player + ")");
                         }

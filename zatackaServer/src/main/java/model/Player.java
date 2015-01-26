@@ -55,8 +55,12 @@ public class Player {
         visited[x][y] = true;
         visited[x + 1][y] = true;
         visited[x][y + 1] = true;
-        visited[x - 1][y] = true;
-        visited[x][y - 1] = true;
+        if (x > 1) {
+            visited[x - 1][y] = true;
+        }
+        if (y > 1) {
+            visited[x][y - 1] = true;
+        }
     }
 
     public List<Point> getPositions() {
