@@ -187,9 +187,7 @@ public class MainWindow extends JFrame {
                     List<Point> positions = players.get(i).getPositions();
 
                     for (int j = 0; j < positions.size(); j++) {
-                        int x = (int) positions.get(j).getX();
-                        int y = (int) positions.get(j).getY();
-                        int c = COLORS[id];
+                        sendPosition(positions.get(j));
                     }
                 }
             }
@@ -202,21 +200,9 @@ public class MainWindow extends JFrame {
                         Player player = players.get(i);
                         Point lastPlayerPosition = player.getLastPosition();
                         if (lastPlayerPosition == null) {
-                            //LOGGER.error("gracz: " + player);
+                            // LOGGER.error("gracz: " + player);
                         } else {
-                            int x = (int) lastPlayerPosition.getX();
-                            int y = (int) lastPlayerPosition.getY();
-                            int c = 255;
-
-                            if (x != lastSentX || y != lastSentY) {
-                                number++;
-                                out.println(String.format(D_D_D_D, x, y, c, number));
-                                if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
-                                    LOGGER.error("Error");
-                                }
-                                lastSentX = x;
-                                lastSentY = y;
-                            }
+                            sendPosition(lastPlayerPosition);
                         }
                     }
 
@@ -236,6 +222,22 @@ public class MainWindow extends JFrame {
                 } catch (IOException | InterruptedException ex) {
                     LOGGER.error(ex.getMessage(), ex);
                 }
+            }
+        }
+
+        private void sendPosition(Point point) {
+            int x = (int) point.getX();
+            int y = (int) point.getY();
+            int c = COLORS[id];
+
+            if (x != lastSentX || y != lastSentY) {
+                number++;
+                out.println(String.format(D_D_D_D, x, y, c, number));
+                if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
+                    LOGGER.error("Error");
+                }
+                lastSentX = x;
+                lastSentY = y;
             }
         }
 
