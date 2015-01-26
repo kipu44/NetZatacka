@@ -182,6 +182,10 @@ public class GameWindow extends JDialog implements ActionListener {
 
                             if (row < image.getWidth() && column < image.getHeight()) {
                                 image.setRGB(row, column, color);
+                                image.setRGB(row + 1, column, color);
+                                image.setRGB(row, column + 1, color);
+                                image.setRGB(row - 1, column, color);
+                                image.setRGB(row, column - 1, color);
                             } else {
                                 LOGGER.error("x = " + row + ", y = " + column + ", color = " + color);
                             }
