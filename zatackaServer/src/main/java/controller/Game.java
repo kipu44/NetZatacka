@@ -16,8 +16,9 @@ public class Game implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(Game.class);
 
     private static final double SPEED = 50.0f;
-    private static final double ROTATE = 0.25;
+    private static final double ROTATE = 0.5;
     private static final Random RANDOM = new Random();
+    private static final double TICK = 1 / 20.0;
 
     private final int width;
     private final int height;
@@ -45,7 +46,7 @@ public class Game implements Runnable {
             delta += deltaTime;
             lastTime = newTime;
 
-            if (delta > 1 / 20.0) {
+            if (delta > TICK) {
                 for (Player player : players) {
 
                     if (player.isAlive()) {
@@ -75,7 +76,7 @@ public class Game implements Runnable {
                     }
                 }
                 
-                delta -= 1 / 20.0;
+                delta -= TICK;
             }
 
 //            try {
