@@ -165,6 +165,8 @@ public class GameWindow extends JDialog implements ActionListener {
 
         Thread writingThread = new Thread(new Runnable() {
             public boolean refreshBoard = false;
+            public int oldRow = -317;
+            public int oldColumn = -317;
 
             @Override
             public void run() {
@@ -186,16 +188,18 @@ public class GameWindow extends JDialog implements ActionListener {
 
                             }
 
-                            if (row < image.getWidth() && column < image.getHeight()) {
-                                int radius = 2;
-                                for (int i = row - radius; i <= row + radius; i++) {
-                                    for (int j = column - radius; j <= column + radius; j++) {
-                                        image.setRGB(i, j, color);
-                                    }
-                                }
-                            } else {
-                                LOGGER.error("x = " + row + ", y = " + column + ", color = " + color);
+                            double[] vector = new double[] {row - oldRow, column - oldColumn};
+                            double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
+                            vector[0] /= magnitude;
+                            vector[1] /= magnitude;
+                            for (double x = row, y = column;
+                                 x <= oldRow && y <= oldColumn;
+                                 x += vector[0], y += vector[1]) {
+                                drawPoint((int) x, (int) y, color);
                             }
+
+                            oldRow = row;
+                            oldColumn = column;
                         }
 
                         if (refreshBoard) {
@@ -203,6 +207,15 @@ public class GameWindow extends JDialog implements ActionListener {
                         }
                     } catch (IOException | NumberFormatException e) {
                         LOGGER.error(e.getMessage(), e);
+                    }
+                }
+            }
+
+            private void drawPoint(int row, int column, int color) {
+                int radius = 2;
+                for (int i = row - radius; i <= row + radius; i++) {
+                    for (int j = column - radius; j <= column + radius; j++) {
+                        image.setRGB(i, j, color);
                     }
                 }
             }

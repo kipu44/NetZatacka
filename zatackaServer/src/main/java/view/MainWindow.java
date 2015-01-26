@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import model.Player;
 import model.Point;
@@ -90,7 +91,7 @@ public class MainWindow extends JFrame {
         textArea.setEditable(false);
         textArea.append("Uruchomiono aplikacje\n");
         sp = new JScrollPane(textArea);
-        sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         consolePane.add(sp, BorderLayout.CENTER);
         add(consolePane, BorderLayout.WEST);
 

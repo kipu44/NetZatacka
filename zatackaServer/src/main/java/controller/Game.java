@@ -36,8 +36,8 @@ public class Game implements Runnable {
     public void run() {
 
         lastTime = System.nanoTime();
-        final double amountOfTicks = 60.0;
-        final double deltaTime = 1 / 120.0;
+        double amountOfTicks = 60.0;
+        double deltaTime = 1 / 120.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         while (running) {
@@ -84,11 +84,12 @@ public class Game implements Runnable {
 //                LOGGER.error(e, e);
 //            }
             }
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("koniec gry");
-            }
         }
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("koniec gry");
+        }
+//            throw new RuntimeException("koniec gry");
     }
 
     private boolean collision(Point position) {
