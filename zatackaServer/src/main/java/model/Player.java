@@ -36,7 +36,7 @@ public class Player {
     public String toString() {
         return "Player{" +
                 "direction=" + direction +
-                ", positions=" + positions +
+                ", positions=" + getLastPosition() +
                 ", alive=" + alive +
                 "}";
     }
