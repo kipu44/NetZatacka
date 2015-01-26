@@ -49,7 +49,7 @@ public class Game implements Runnable {
                     double y = player.getDirection().getY() * deltaTime;
                     Point newPosition = lastPosition.translatedPoint(x, y);
 
-                    if (collision(newPosition)) {
+                    if (collision(newPosition, player)) {
                         player.setAlive(false);
                         //players.remove(player);
                         if (LOGGER.isDebugEnabled()) {
@@ -72,7 +72,7 @@ public class Game implements Runnable {
         }
     }
 
-    private boolean collision(Point position) {
+    private boolean collision(Point position, Player currentPlayer) {
         synchronized (players) {
             double x = position.getX();
             double y = position.getY();
@@ -82,7 +82,7 @@ public class Game implements Runnable {
 
             for (Player player : players) {
                 for (Point point : player.getPositions()) {
-                    if (position.equals(point)) {
+                    if (position.equals(point) && currentPlayer != player) {
                         return true;
                     }
                 }
