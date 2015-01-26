@@ -15,6 +15,7 @@ public class Game implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Game.class);
 
+    private static final double SPEED = 50.0f;
     private static final double ROTATE = 0.25;
     private static final Random RANDOM = new Random();
 
@@ -36,32 +37,31 @@ public class Game implements Runnable {
     public void run() {
 
         lastTime = System.nanoTime();
-        double amountOfTicks = 60.0;
-        double deltaTime = 1 / 120.0;
-        double ns = 1000000000 / amountOfTicks;
         double delta = 0;
+
         while (running) {
             long newTime = System.nanoTime();
-            delta += (newTime - lastTime) / ns;
+            float deltaTime = 1.0E-9f * (newTime - lastTime);
+            delta += deltaTime;
             lastTime = newTime;
 
-            if (delta > 1) {
+            if (delta > 1 / 20.0) {
                 for (Player player : players) {
 
                     if (player.isAlive()) {
                         Point lastPosition = player.getLastPosition();
 
-                        double x = player.getDirection().getX() * deltaTime;
-                        double y = player.getDirection().getY() * deltaTime;
+                        double x = player.getDirection().getX() * delta * SPEED;
+                        double y = player.getDirection().getY() * delta * SPEED;
                         Point newPosition = lastPosition.translatedPoint(x, y);
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug(String.format(Locale.ENGLISH,
-                                                       "Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
-                                                       x,
-                                                       y,
-                                                       deltaTime,
-                                                       newPosition.getX(),
-                                                       newPosition.getY()));
+                                    "Delta: %3.3f,%3.3f DeltaTime: %3.6f Pozycja (%3.3f,%3.3f)",
+                                    x,
+                                    y,
+                                    delta,
+                                    newPosition.getX(),
+                                    newPosition.getY()));
                         }
 
                         if (collision(newPosition)) {
@@ -74,13 +74,15 @@ public class Game implements Runnable {
                         }
                     }
                 }
+                
+                delta -= 1 / 20.0;
+            }
 
 //            try {
 //                Thread.sleep(100);
 //            } catch (InterruptedException e) {
 //                LOGGER.error(e, e);
 //            }
-            }
         }
 
         if (LOGGER.isDebugEnabled()) {
