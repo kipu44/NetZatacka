@@ -37,7 +37,7 @@ public class MainWindow extends JFrame {
 
     public static final int WIDTH = 480;
     public static final int HEIGHT = 480;
-    
+
     public static final int[] COLORS = {
         0x0000FF00,
         0x00FF00FF,
@@ -156,12 +156,14 @@ public class MainWindow extends JFrame {
 
     private class ConnectionThread implements Runnable {
 
+        private static final String D_D_D_D = "%d/%d/%d/%d";
         private final int id;
         private final Socket socket;
         private PrintWriter out;
         private BufferedReader in;
 
         private boolean running = true;
+        private int number = 1;
 
         private ConnectionThread(int id, Socket socket) throws IOException {
             this.id = id;
@@ -186,11 +188,12 @@ public class MainWindow extends JFrame {
                         int x = (int) positions.get(j).getX();
                         int y = (int) positions.get(j).getY();
                         int c = COLORS[id];
-                        out.println(x + "/" + y + "/" + c);
+                        ++number;
+                        out.println(String.format(D_D_D_D, x, y, c, number));
                     }
                 }
             }
-            
+
             out.println("kasztan");
 
             while (running) {
