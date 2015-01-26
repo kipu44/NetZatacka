@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import model.Player;
@@ -47,7 +48,8 @@ public class Game implements Runnable {
                     double y = player.getDirection().getY() * deltaTime;
                     Point newPosition = lastPosition.translatedPoint(x, y);
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug(String.format("Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
+                        LOGGER.debug(String.format(Locale.ENGLISH,
+                                                   "Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
                                                    x,
                                                    y,
                                                    deltaTime,
@@ -84,9 +86,7 @@ public class Game implements Runnable {
             int y = (int) position.getY();
             for (Player player : players) {
                 boolean[][] visited = player.getVisited();
-                int x1 = (int) position.getX();
-                int y1 = (int) position.getY();
-                if (x != x1 && y != y1 && visited[x1][y1]) {
+                if (visited[x][y]) {
                     return true;
                 }
             }

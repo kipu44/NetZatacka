@@ -183,15 +183,16 @@ public class GameWindow extends JDialog implements ActionListener {
 
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug("Pakiet nr " + number + " odebrano. Narysuj " + row + "," + column);
-                                
+
                             }
-                            
+
                             if (row < image.getWidth() && column < image.getHeight()) {
-                                image.setRGB(row, column, color);
-                                image.setRGB(row + 1, column, color);
-                                image.setRGB(row, column + 1, color);
-                                image.setRGB(row - 1, column, color);
-                                image.setRGB(row, column - 1, color);
+                                int radius = 2;
+                                for (int i = row - radius; i <= row + radius; i++) {
+                                    for (int j = column - radius; j <= column + radius; j++) {
+                                        image.setRGB(i, j, color);
+                                    }
+                                }
                             } else {
                                 LOGGER.error("x = " + row + ", y = " + column + ", color = " + color);
                             }

@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
@@ -38,11 +39,11 @@ public class MainWindow extends JFrame {
     public static final int WIDTH = 480;
     public static final int HEIGHT = 480;
 
-    public static final int[] COLORS = {
-        0x0000FF00,
-        0x00FF00FF,
-        0x00AAAAAA,
-        0x00AAAA00
+    private static final int[] COLORS = {
+        0xFF00FF00,
+        0xFFFF00FF,
+        0xFFAAAAAA,
+        0xFFAAAA00
     };
 
     //ServerSocket, Socket, Input and Output Streams
@@ -232,7 +233,7 @@ public class MainWindow extends JFrame {
 
             if (x != lastSentX || y != lastSentY) {
                 number++;
-                out.println(String.format(D_D_D_D, x, y, c, number));
+                out.println(String.format(Locale.ENGLISH, D_D_D_D, x, y, c, number));
                 if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
                     LOGGER.error("Error");
                 }
