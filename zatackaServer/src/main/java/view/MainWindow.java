@@ -161,6 +161,8 @@ public class MainWindow extends JFrame {
         private final Socket socket;
         private PrintWriter out;
         private BufferedReader in;
+        private int lastSentX = -20;
+        private int lastSentY = -20;
 
         private boolean running = true;
         private int number = 1;
@@ -188,8 +190,6 @@ public class MainWindow extends JFrame {
                         int x = (int) positions.get(j).getX();
                         int y = (int) positions.get(j).getY();
                         int c = COLORS[id];
-                        ++number;
-                        out.println(String.format(D_D_D_D, x, y, c, number));
                     }
                 }
             }
@@ -207,7 +207,16 @@ public class MainWindow extends JFrame {
                             int x = (int) lastPlayerPosition.getX();
                             int y = (int) lastPlayerPosition.getY();
                             int c = 255;
-                            out.println(x + "/" + y + "/" + c);
+
+                            if (x != lastSentX || y != lastSentY) {
+                                number++;
+                                out.println(String.format(D_D_D_D, x, y, c, number));
+                                if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
+                                    LOGGER.error("Error");
+                                }
+                                lastSentX = x;
+                                lastSentY = y;
+                            }
                         }
                     }
 

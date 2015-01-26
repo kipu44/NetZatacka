@@ -35,7 +35,7 @@ public class Game implements Runnable {
     public void run() {
         while (running) {
             long newTime = System.nanoTime();
-            float deltaTime = 1.0E-08f * (newTime - lastTime);
+            float deltaTime = 5.0E-08f * (newTime - lastTime);
             lastTime = newTime;
             for (Player player : players) {
 
@@ -45,6 +45,9 @@ public class Game implements Runnable {
                     double x = player.getDirection().getX() * deltaTime;
                     double y = player.getDirection().getY() * deltaTime;
                     Point newPosition = lastPosition.translatedPoint(x, y);
+                    if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Pzycja (" + newPosition.getX() + "," + newPosition.getY() +")");
+                        }
 
                     if (collision(newPosition)) {
                         player.setAlive(false);

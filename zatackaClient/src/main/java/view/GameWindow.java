@@ -179,7 +179,13 @@ public class GameWindow extends JDialog implements ActionListener {
                             int row = Integer.parseInt(rowInts[0]);
                             int column = Integer.parseInt(rowInts[1]);
                             int color = Integer.parseInt(rowInts[2]);
+                            int number = Integer.parseInt(rowInts[3]);
 
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Pakiet nr " + number + " odebrano. Narysuj " + row + "," + column);
+                                
+                            }
+                            
                             if (row < image.getWidth() && column < image.getHeight()) {
                                 image.setRGB(row, column, color);
                                 image.setRGB(row + 1, column, color);
