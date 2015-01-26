@@ -37,6 +37,13 @@ public class MainWindow extends JFrame {
 
     public static final int WIDTH = 480;
     public static final int HEIGHT = 480;
+    
+    public static final int[] COLORS = {
+        0x0000FF00,
+        0x00FF00FF,
+        0x00AAAAAA,
+        0x00AAAA00
+    };
 
     //ServerSocket, Socket, Input and Output Streams
     private ServerSocket serverSocket = null;
@@ -132,8 +139,6 @@ public class MainWindow extends JFrame {
                     if (game == null) {
                         game = new Game(WIDTH, HEIGHT);
                         new Thread(game, "Game").start();
-                    } else {
-                        game.addPlayer();
                     }
 
                     barrier = new CountDownLatch(connections.size() + 1);
@@ -164,18 +169,34 @@ public class MainWindow extends JFrame {
 
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+            game.addPlayer();
             new Thread(this, Integer.toString(id)).start();
         }
 
         @Override
         public void run() {
             out.println(Integer.toString(WIDTH) + "/" + Integer.toString(HEIGHT));
+            List<Player> players = game.getPlayers();
+
+            for (int i = 0; i < players.size(); i++) {
+                if (i != id) {
+                    List<Point> positions = players.get(i).getPositions();
+
+                    for (int j = 0; j < positions.size(); j++) {
+                        int x = (int) positions.get(j).getX();
+                        int y = (int) positions.get(j).getY();
+                        int c = COLORS[id];
+                        out.println(x + "/" + y + "/" + c);
+                    }
+                }
+            }
+            
+            out.println("kasztan");
 
             while (running) {
                 try {
-                    for (int i = 0; i < game.getPlayers().size(); i++) {
-                        Player player = game.getPlayers().get(i);
+                    for (int i = 0; i < players.size(); i++) {
+                        Player player = players.get(i);
                         Point lastPlayerPosition = player.getLastPosition();
                         if (lastPlayerPosition == null) {
                             LOGGER.error("gracz: " + player);
