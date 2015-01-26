@@ -38,9 +38,6 @@ public class GameWindow extends JDialog implements ActionListener {
     private int width = 640;
     private int height = 480;
 
-    private boolean leftKey;
-    private boolean rightKey;
-
     private JButton closeButton;
     private BufferedImage image;
     private JLabel board;
@@ -49,6 +46,7 @@ public class GameWindow extends JDialog implements ActionListener {
     private JPanel panel;
     private final KeyStroke leftStroke;
     private final KeyStroke rightStroke;
+    private boolean[][] painted;
 
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
@@ -116,19 +114,20 @@ public class GameWindow extends JDialog implements ActionListener {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                socketManager.getOut().println("r");
+                socketManager.getOut().println("l");
             }
         });
         actionMap.put(rightStroke.toString(), new AbstractAction() {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                socketManager.getOut().println("l");
+                socketManager.getOut().println("r");
             }
         });
 
         Thread writingThread = new Thread(new Runnable() {
             public boolean refreshBoard = false;
+
             public int oldRow = -317;
             public int oldColumn = -317;
 
@@ -147,26 +146,12 @@ public class GameWindow extends JDialog implements ActionListener {
                             int color = Integer.parseInt(rowInts[2]);
                             int number = Integer.parseInt(rowInts[3]);
 
-                            if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("Pakiet nr " + number + " odebrano. Narysuj " + row + "," + column);
-
+                            if (!painted[row][column]) {
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug("Pakiet nr " + number + " odebrano. Narysuj " + row + "," + column);
+                                }
+                                interpolate(row, column, color);
                             }
-
-                            double[] vector = new double[] {oldRow - row, oldColumn - column};
-                            double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
-                            magnitude = StrictMath.sqrt(magnitude);
-                            magnitude *= 0.01;
-                            vector[0] /= magnitude;
-                            vector[1] /= magnitude;
-                            for (double x = row, y = column;
-                                 x <= oldRow && y <= oldColumn;
-                                 x += vector[0], y += vector[1]) {
-                                drawPoint((int) x, (int) y, color);
-                            }//*/
-                            drawPoint(row, column, color);
-
-                            oldRow = row;
-                            oldColumn = column;
                         }
 
                         if (refreshBoard) {
@@ -178,32 +163,46 @@ public class GameWindow extends JDialog implements ActionListener {
                 }
             }
 
+            private void interpolate(int row, int column, int color) {
+                if (oldRow == -317 || oldColumn == -317) {
+                    double[] vector = new double[] {oldRow - row, oldColumn - column};
+                    double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
+                    magnitude = StrictMath.sqrt(magnitude);
+//                magnitude *= 3.0;
+                    vector[0] /= magnitude;
+                    vector[1] /= magnitude;
+                    for (double x = row, y = column;
+                         x <= oldRow && y <= oldColumn;
+                         x += vector[0], y += vector[1]) {
+                        int ix = (int) x;
+                        int iy = (int) y;
+                        drawPoint(ix, iy, color);
+                    }
+                } else {
+                    drawPoint(row, column, color);
+                }
+
+                oldRow = row;
+                oldColumn = column;
+            }
+
             private void drawPoint(int row, int column, int color) {
-                int radius = 1;
-                for (int i = row - radius; i <= row + radius; i++) {
-                    for (int j = column - radius; j <= column + radius; j++) {
-                        image.setRGB(i, j, color);
+                if (!painted[row][column]) {
+                    painted[row][column] = true;
+                    int radius = 1;
+                    for (int i = row - radius; i <= row + radius; i++) {
+                        for (int j = column - radius; j <= column + radius; j++) {
+                            image.setRGB(i, j, color);
+                        }
                     }
                 }
             }
         });
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("start1");
-        }
         movingThreadRunning = true;
-        leftKey = false;
-        rightKey = false;
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("start2");
-        }
-//        readingThread.start();
         writingThread.start();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("start3");
-        }
     }
 
     public void setBoardSize(int width, int height) {
@@ -224,6 +223,15 @@ public class GameWindow extends JDialog implements ActionListener {
             for (int y = 0; y < newHeight; y++) {
                 image.setRGB(x, y, 0xFF000000 | 250 * x / newWidth << 16 | 250 * y / newHeight << 8 | 0xFF / 2);
             }
+        }
+        painted = new boolean[newWidth][newHeight];
+        for (int i = 0; i < newWidth; i++) {
+            painted[i][newHeight - 1] = true;
+            painted[i][0] = true;
+        }
+        for (int i = 0; i < newHeight; i++) {
+            painted[newWidth - 1][i] = true;
+            painted[0][i] = true;
         }
         refreshBoardImage();
     }

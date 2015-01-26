@@ -13,22 +13,12 @@ public class Player {
 
     private final Point direction;
     private final List<Point> positions;
-    private final boolean[][] visited;
     private boolean alive;
 
     public Player(Point direction, Point position, int l1, int l2) {
         this.direction = direction;
         positions = new ArrayList<>(l1 + l2);
         positions.add(position);
-        visited = new boolean[l1][l2];
-        for (int i = 0; i < l1; i++) {
-            visited[i][0] = true;
-            visited[i][l2 - 1] = true;
-        }
-        for (int i = 0; i < l2; i++) {
-            visited[0][i] = true;
-            visited[l1 - 1][i] = true;
-        }
         alive = true;
     }
 
@@ -51,9 +41,6 @@ public class Player {
 
     public void addPosition(Point position) {
         positions.add(position);
-        int x = (int) position.getX();
-        int y = (int) position.getY();
-        visited[x][y] = true;
     }
 
     public List<Point> getPositions() {
@@ -68,7 +55,4 @@ public class Player {
         this.alive = alive;
     }
 
-    public boolean[][] getVisited() {
-        return visited;
-    }
 }

@@ -41,10 +41,10 @@ public class MainWindow extends JFrame {
     public static final int HEIGHT = 480;
 
     private static final int[] COLORS = {
-        0xFF00FF00,
-        0xFFFF00FF,
-        0xFFAAAAAA,
-        0xFFAAAA00
+            0xFF00FFFF,
+            0xFFFFFF00,
+            0xFF000000,
+            0xFFFFFFFF
     };
 
     //ServerSocket, Socket, Input and Output Streams
@@ -54,7 +54,7 @@ public class MainWindow extends JFrame {
     private CountDownLatch barrier;
 
     // Window info
-    private Dimension screenSize;                                    // screen size
+    private Dimension screenSize;
     private int width;
     private int height;
 
@@ -163,8 +163,8 @@ public class MainWindow extends JFrame {
         private final Socket socket;
         private PrintWriter out;
         private BufferedReader in;
-        private int lastSentX = -20;
-        private int lastSentY = -20;
+        private int lastSentX = -120;
+        private int lastSentY = -120;
 
         private boolean running = true;
         private int number = 1;
@@ -200,11 +200,13 @@ public class MainWindow extends JFrame {
                 try {
                     for (int i = 0; i < players.size(); i++) {
                         Player player = players.get(i);
-                        Point lastPlayerPosition = player.getLastPosition();
-                        if (lastPlayerPosition == null) {
-                            // LOGGER.error("gracz: " + player);
-                        } else {
-                            sendPosition(lastPlayerPosition, i);
+                        if (player.isAlive()) {
+                            Point lastPlayerPosition = player.getLastPosition();
+                            if (lastPlayerPosition == null) {
+                                // LOGGER.error("gracz: " + player);
+                            } else {
+                                sendPosition(lastPlayerPosition, i);
+                            }
                         }
                     }
 
@@ -237,9 +239,32 @@ public class MainWindow extends JFrame {
                 out.println(String.format(Locale.ENGLISH, D_D_D_D, x, y, c, number));
                 if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
                     LOGGER.error("Error");
+                } else {
+                    interpolate(x, y);
                 }
-                lastSentX = x;
-                lastSentY = y;
+            }
+        }
+
+        private void interpolate(int row, int column) {
+            if (lastSentX == -120 || lastSentY == -120) {
+                double[] vector = {lastSentX - row, lastSentY - column};
+                double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
+                magnitude = StrictMath.sqrt(magnitude);
+//            magnitude *= 3.0;
+                vector[0] /= magnitude;
+                vector[1] /= magnitude;
+                for (double x = row, y = column;
+                     x <= lastSentX && y <= lastSentY;
+                     x += vector[0], y += vector[1]) {
+                    int ix = (int) x;
+                    int iy = (int) y;
+                    game.drawPoint(ix, iy);
+                }
+
+                lastSentX = row;
+                lastSentY = column;
+            } else {
+                game.drawPoint(row, column);
             }
         }
 

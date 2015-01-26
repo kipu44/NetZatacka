@@ -26,11 +26,33 @@ public class Game implements Runnable {
 
     private long lastTime;
     private final List<Player> players = new CopyOnWriteArrayList<>();
+    private boolean[][] painted;
 
     public Game(int width, int height) {
         this.width = width;
         this.height = height;
+        painted = new boolean[width][height];
+        painted = new boolean[width][height];
+        for (int i = 0; i < width; i++) {
+            painted[i][height - 1] = true;
+            painted[i][0] = true;
+        }
+        for (int i = 0; i < height; i++) {
+            painted[width - 1][i] = true;
+            painted[0][i] = true;
+        }
+    }
 
+    public void drawPoint(int row, int column) {
+        if (!painted[row][column]) {
+            painted[row][column] = true;
+            int radius = 1;
+            for (int i = row - radius; i <= row + radius; i++) {
+                for (int j = column - radius; j <= column + radius; j++) {
+                    painted[i][j] = true;
+                }
+            }
+        }
     }
 
     @Override
@@ -56,12 +78,12 @@ public class Game implements Runnable {
                         Point newPosition = lastPosition.translatedPoint(x, y);
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug(String.format(Locale.ENGLISH,
-                                    "Delta: %3.3f,%3.3f DeltaTime: %3.6f Pozycja (%3.3f,%3.3f)",
-                                    x,
-                                    y,
-                                    delta,
-                                    newPosition.getX(),
-                                    newPosition.getY()));
+                                                       "Delta: %3.3f,%3.3f DeltaTime: %3.6f Pozycja (%3.3f,%3.3f)",
+                                                       x,
+                                                       y,
+                                                       delta,
+                                                       newPosition.getX(),
+                                                       newPosition.getY()));
                         }
 
                         if (collision(newPosition)) {
@@ -74,7 +96,7 @@ public class Game implements Runnable {
                         }
                     }
                 }
-                
+
                 delta -= 1 / 20.0;
             }
 
@@ -88,7 +110,6 @@ public class Game implements Runnable {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("koniec gry");
         }
-//            throw new RuntimeException("koniec gry");
     }
 
     private boolean collision(Point position) {
@@ -96,9 +117,8 @@ public class Game implements Runnable {
             int x = (int) position.getX();
             int y = (int) position.getY();
             for (Player player : players) {
-                boolean[][] visited = player.getVisited();
                 Point lastPosition = player.getLastPosition();
-                if (visited[x][y] && ((int) lastPosition.getX() != x || (int) lastPosition.getY() != y)) {
+                if (painted[x][y] && ((int) lastPosition.getX() != x || (int) lastPosition.getY() != y)) {
                     return true;
                 }
             }
@@ -131,13 +151,13 @@ public class Game implements Runnable {
 
     public void rotateLeft(int i) {
         synchronized (players) {
-            players.get(i).getDirection().rotate(ROTATE);
+            players.get(i).getDirection().rotate(-ROTATE);
         }
     }
 
     public void rotateRight(int i) {
         synchronized (players) {
-            players.get(i).getDirection().rotate(-ROTATE);
+            players.get(i).getDirection().rotate(ROTATE);
         }
     }
 }

@@ -9,7 +9,6 @@ import model.ConnectionSettings;
 import org.apache.log4j.Logger;
 
 /**
- *
  * @author Lukasz
  */
 public class SocketManager {
@@ -22,22 +21,22 @@ public class SocketManager {
 
     public SocketManager() {
     }
-    
+
     public void createConnection(ConnectionSettings settings) throws IOException {
         try {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Tworzenie polaczenia: " + settings.getHost() + "::" + settings.getPort());
             }
-            
+
             socket = new Socket(settings.getHost(), settings.getPort());
-            out =  new PrintWriter(socket.getOutputStream(), true);
+            out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            
+
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
-     }
+    }
 
     public PrintWriter getOut() {
         return out;
