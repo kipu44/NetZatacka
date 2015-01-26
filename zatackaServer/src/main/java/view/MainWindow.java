@@ -142,8 +142,8 @@ public class MainWindow extends JFrame {
                     }
 
                     barrier = new CountDownLatch(connections.size() + 1);
-
-                    connections.add(new ConnectionThread(connections.size(), serverSocket.accept()));
+                    Socket socket = serverSocket.accept();
+                    connections.add(new ConnectionThread(connections.size(), socket));
 
                     textArea.append("Polaczono z klientem.\n");
                     scrollToBottom();
@@ -199,7 +199,7 @@ public class MainWindow extends JFrame {
                         Player player = players.get(i);
                         Point lastPlayerPosition = player.getLastPosition();
                         if (lastPlayerPosition == null) {
-                            LOGGER.error("gracz: " + player);
+                            //LOGGER.error("gracz: " + player);
                         } else {
                             int x = (int) lastPlayerPosition.getX();
                             int y = (int) lastPlayerPosition.getY();
