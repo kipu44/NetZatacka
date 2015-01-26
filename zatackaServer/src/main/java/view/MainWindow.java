@@ -189,7 +189,7 @@ public class MainWindow extends JFrame {
                     List<Point> positions = players.get(i).getPositions();
 
                     for (int j = 0; j < positions.size(); j++) {
-                        sendPosition(positions.get(j));
+                        sendPosition(positions.get(j), i);
                     }
                 }
             }
@@ -204,7 +204,7 @@ public class MainWindow extends JFrame {
                         if (lastPlayerPosition == null) {
                             // LOGGER.error("gracz: " + player);
                         } else {
-                            sendPosition(lastPlayerPosition);
+                            sendPosition(lastPlayerPosition, i);
                         }
                     }
 
@@ -227,7 +227,7 @@ public class MainWindow extends JFrame {
             }
         }
 
-        private void sendPosition(Point point) {
+        private void sendPosition(Point point, int id) {
             int x = (int) point.getX();
             int y = (int) point.getY();
             int c = COLORS[id];
