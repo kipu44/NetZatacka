@@ -42,14 +42,18 @@ public class Game implements Runnable {
                 if (player.isAlive()) {
                     Point lastPosition = player.getLastPosition();
 
-                    
+
                     double x = player.getDirection().getX() * deltaTime;
                     double y = player.getDirection().getY() * deltaTime;
                     Point newPosition = lastPosition.translatedPoint(x, y);
                     if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Delta: " + x + "," + y + " DeltaTime: " + deltaTime);
-                            LOGGER.debug("Pozycja (" + newPosition.getX() + "," + newPosition.getY() +")");
-                        }
+                        LOGGER.debug(String.format("Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
+                                                   x,
+                                                   y,
+                                                   deltaTime,
+                                                   newPosition.getX(),
+                                                   newPosition.getY()));
+                    }
 
                     if (collision(newPosition)) {
                         player.setAlive(false);
