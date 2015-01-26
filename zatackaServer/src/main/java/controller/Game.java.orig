@@ -51,6 +51,11 @@ public class Game implements Runnable {
                     if (player.isAlive()) {
                         Point lastPosition = player.getLastPosition();
 
+<<<<<<< HEAD
+                        double x = player.getDirection().getX() * deltaTime;
+                        double y = player.getDirection().getY() * deltaTime;
+                        Point newPosition = lastPosition.translatedPoint(x, y);
+=======
                     double x = player.getDirection().getX() * deltaTime;
                     double y = player.getDirection().getY() * deltaTime;
                     Point newPosition = lastPosition.translatedPoint(x, y);
@@ -66,6 +71,7 @@ public class Game implements Runnable {
 
                     if (collision(newPosition)) {
                         player.setAlive(false);
+>>>>>>> e8db7f49656fbf047b272354c7700b7fca693d28
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug(String.format("Delta: %3.3f,%3.3f DeltaTime: %3.3f Pozycja (%3.3f,%3.3f)",
                                     x,

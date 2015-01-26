@@ -39,7 +39,11 @@ public class MainWindow extends JFrame {
     public static final int WIDTH = 480;
     public static final int HEIGHT = 480;
 
+<<<<<<< HEAD
+    public static final int[] COLORS = {
+=======
     private static final int[] COLORS = {
+>>>>>>> e8db7f49656fbf047b272354c7700b7fca693d28
         0xFF00FF00,
         0xFFFF00FF,
         0xFFAAAAAA,
