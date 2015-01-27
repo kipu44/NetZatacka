@@ -128,8 +128,8 @@ public class GameWindow extends JDialog implements ActionListener {
         Thread writingThread = new Thread(new Runnable() {
             public boolean refreshBoard = false;
 
-            public int oldRow = -317;
-            public int oldColumn = -317;
+            public int[] oldRow = {-317, -317, -317, -317};
+            public int[] oldColumn = {-317, -317, -317, -317};
 
             @Override
             public void run() {
@@ -148,9 +148,9 @@ public class GameWindow extends JDialog implements ActionListener {
 
                             if (!painted[row][column]) {
                                 if (LOGGER.isDebugEnabled()) {
-                                    LOGGER.debug("Pakiet nr " + number + " odebrano. Narysuj " + row + "," + column);
+                                    LOGGER.debug("Pakiet watku " + number + " odebrano. Narysuj " + row + "," + column);
                                 }
-                                interpolate(row, column, color);
+                                interpolate(row, column, number, color);
                             }
                         }
 
@@ -163,27 +163,36 @@ public class GameWindow extends JDialog implements ActionListener {
                 }
             }
 
-            private void interpolate(int row, int column, int color) {
-                if (oldRow == -317 || oldColumn == -317) {
-                    double[] vector = new double[] {oldRow - row, oldColumn - column};
-                    double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
-                    magnitude = StrictMath.sqrt(magnitude);
-//                magnitude *= 3.0;
-                    vector[0] /= magnitude;
-                    vector[1] /= magnitude;
-                    for (double x = row, y = column;
-                         x <= oldRow && y <= oldColumn;
-                         x += vector[0], y += vector[1]) {
-                        int ix = (int) x;
-                        int iy = (int) y;
-                        drawPoint(ix, iy, color);
+            private void interpolate(int row, int column, int number, int color) {
+                if (oldRow[number] != -317 && oldColumn[number] != -317) {
+                    int dx = Math.abs(row - oldRow[number]), sx = oldRow[number] < row ? 1 : -1;
+                    int dy = Math.abs(column - oldColumn[number]), sy = oldColumn[number] < column ? 1 : -1;
+                    int err = (dx > dy ? dx : -dy) / 2, e2;
+
+                    int x0 = oldRow[number];
+                    int y0 = oldColumn[number];
+
+                    for (;;) {
+                        drawPoint(x0, y0, color);
+                        if (x0 == row && y0 == column) {
+                            break;
+                        }
+                        e2 = err;
+                        if (e2 > -dx) {
+                            err -= dy;
+                            x0 += sx;
+                        }
+                        if (e2 < dy) {
+                            err += dx;
+                            y0 += sy;
+                        }
                     }
                 } else {
                     drawPoint(row, column, color);
                 }
 
-                oldRow = row;
-                oldColumn = column;
+                oldRow[number] = row;
+                oldColumn[number] = column;
             }
 
             private void drawPoint(int row, int column, int color) {

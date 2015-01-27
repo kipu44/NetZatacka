@@ -15,10 +15,10 @@ public class Game implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Game.class);
 
-    private static final double SPEED = 50.0f;
+    private static final double SPEED = 32.0f;
     private static final double ROTATE = 0.5;
     private static final Random RANDOM = new Random();
-    private static final double TICK = 1 / 20.0;
+    private static final double TICK = 1 / 30.0;
 
     private final int width;
     private final int height;
@@ -44,18 +44,6 @@ public class Game implements Runnable {
         }
     }
 
-    public void drawPoint(int row, int column) {
-        if (!painted[row][column]) {
-            painted[row][column] = true;
-            int radius = 1;
-            for (int i = row - radius; i <= row + radius; i++) {
-                for (int j = column - radius; j <= column + radius; j++) {
-                    painted[i][j] = true;
-                }
-            }
-        }
-    }
-
     @Override
     public void run() {
 
@@ -77,17 +65,18 @@ public class Game implements Runnable {
                         double x = player.getDirection().getX() * delta * SPEED;
                         double y = player.getDirection().getY() * delta * SPEED;
                         Point newPosition = lastPosition.translatedPoint(x, y);
+
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug(String.format(Locale.ENGLISH,
-                                                       "Delta: %3.3f,%3.3f DeltaTime: %3.6f Pozycja (%3.3f,%3.3f)",
-                                                       x,
-                                                       y,
-                                                       delta,
-                                                       newPosition.getX(),
-                                                       newPosition.getY()));
+                                    "Delta: %3.3f,%3.3f DeltaTime: %3.6f Pozycja (%3.3f,%3.3f)",
+                                    x,
+                                    y,
+                                    delta,
+                                    newPosition.getX(),
+                                    newPosition.getY()));
                         }
 
-                        if (collision(newPosition)) {
+                        if (collision(lastPosition, newPosition)) {
                             player.setAlive(false);
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug("gracz przegral (" + player + ")");
@@ -100,12 +89,6 @@ public class Game implements Runnable {
 
                 delta -= TICK;
             }
-
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                LOGGER.error(e, e);
-//            }
         }
 
         if (LOGGER.isDebugEnabled()) {
@@ -113,17 +96,14 @@ public class Game implements Runnable {
         }
     }
 
-    private boolean collision(Point position) {
+    private boolean collision(Point lastPosition, Point position) {
         synchronized (players) {
-            int x = (int) position.getX();
-            int y = (int) position.getY();
-            for (Player player : players) {
-                Point lastPosition = player.getLastPosition();
-                if (painted[x][y] && ((int) lastPosition.getX() != x || (int) lastPosition.getY() != y)) {
-                    return true;
-                }
-            }
-            return false;
+            int x0 = (int) lastPosition.getX();
+            int y0 = (int) lastPosition.getY();
+            int x1 = (int) position.getX();
+            int y1 = (int) position.getY();
+
+            return !interpolate(x0, y0, x1, y1);
         }
     }
 
@@ -160,5 +140,43 @@ public class Game implements Runnable {
         synchronized (players) {
             players.get(i).getDirection().rotate(ROTATE);
         }
+    }
+
+    private boolean interpolate(int oldRow, int oldColumn, int row, int column) {
+        
+        boolean isSuccess;
+        
+        painted[oldRow][oldColumn] = false;
+        
+        int dx = Math.abs(row - oldRow), sx = oldRow < row ? 1 : -1;
+        int dy = Math.abs(column - oldColumn), sy = oldColumn < column ? 1 : -1;
+        int err = (dx > dy ? dx : -dy) / 2, e2;
+
+        int x0 = oldRow;
+        int y0 = oldColumn;
+
+        for (;;) {
+            
+            if (painted[x0][y0]) {
+                return false;
+            } else {
+                painted[x0][y0] = true;
+            }
+            
+            if (x0 == row && y0 == column) {
+                break;
+            }
+            e2 = err;
+            if (e2 > -dx) {
+                err -= dy;
+                x0 += sx;
+            }
+            if (e2 < dy) {
+                err += dx;
+                y0 += sy;
+            }
+        }
+        
+        return true;
     }
 }

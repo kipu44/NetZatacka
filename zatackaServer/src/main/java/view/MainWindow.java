@@ -236,37 +236,37 @@ public class MainWindow extends JFrame {
 
             if (x != lastSentX || y != lastSentY) {
                 number++;
-                out.println(String.format(Locale.ENGLISH, D_D_D_D, x, y, c, number));
+                out.println(String.format(Locale.ENGLISH, D_D_D_D, x, y, c, id));
                 if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
                     LOGGER.error("Error");
                 } else {
-                    interpolate(x, y);
+                    //interpolate(x, y);
                 }
             }
         }
 
-        private void interpolate(int row, int column) {
-            if (lastSentX == -120 || lastSentY == -120) {
-                double[] vector = {lastSentX - row, lastSentY - column};
-                double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
-                magnitude = StrictMath.sqrt(magnitude);
-//            magnitude *= 3.0;
-                vector[0] /= magnitude;
-                vector[1] /= magnitude;
-                for (double x = row, y = column;
-                     x <= lastSentX && y <= lastSentY;
-                     x += vector[0], y += vector[1]) {
-                    int ix = (int) x;
-                    int iy = (int) y;
-                    game.drawPoint(ix, iy);
-                }
-
-                lastSentX = row;
-                lastSentY = column;
-            } else {
-                game.drawPoint(row, column);
-            }
-        }
+//        private void interpolate(int row, int column) {
+//            if (lastSentX == -120 || lastSentY == -120) {
+//                double[] vector = {lastSentX - row, lastSentY - column};
+//                double magnitude = vector[0] * vector[0] + vector[1] * vector[1];
+//                magnitude = StrictMath.sqrt(magnitude);
+////            magnitude *= 3.0;
+//                vector[0] /= magnitude;
+//                vector[1] /= magnitude;
+//                for (double x = row, y = column;
+//                     x <= lastSentX && y <= lastSentY;
+//                     x += vector[0], y += vector[1]) {
+//                    int ix = (int) x;
+//                    int iy = (int) y;
+//                    game.drawPoint(ix, iy);
+//                }
+//
+//                lastSentX = row;
+//                lastSentY = column;
+//            } else {
+//                game.drawPoint(row, column);
+//            }
+//        }
 
         @Override
         protected void finalize() throws Throwable {
