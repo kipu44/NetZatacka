@@ -5,11 +5,16 @@
  */
 package net;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+
 /**
  *
  * @author Admin
  */
 public class PredictionCalculator {
+    
+    private static final Logger LOGGER = Logger.getLogger(PredictionCalculator.class);
     
     private static final double SPEED = 25.0f;
     private static final double ROTATE = 0.5;
@@ -27,15 +32,18 @@ public class PredictionCalculator {
         lastTime = System.nanoTime();
     }
     
-    public Point Update() {
+    public void Update() {
         long newTime = System.nanoTime();
-        float deltaTime = 1.0E-9f * (newTime - lastTime);
+        double deltaTime = 1.0E-9 * (newTime - lastTime);
         
         double x = direction.getX() * deltaTime * SPEED;
         double y = direction.getY() * deltaTime * SPEED;
         Point newPosition = position.translatedPoint(x, y);
         lastTime = newTime;
-        return newPosition;
+        position = newPosition;
+        
+        LOGGER.debug("DeltaTime" + deltaTime);
+        
     }
 
     public Point getPosition() {
@@ -47,9 +55,10 @@ public class PredictionCalculator {
      }
      
     public void synchronizePosition(Point serverPosition) {
-        if (!position.equals(serverPosition)) {
-            position = new Point(position.getX() + serverPosition.getX() / 2, position.getY() + serverPosition.getY() / 2);
-        }
+        //if (!position.equals(serverPosition)) {
+        //   position = new Point(position.getX() + serverPosition.getX() / 2, position.getY() + serverPosition.getY() / 2);
+        //}
+        position = serverPosition;
     }
     
     public void rotateLeft() {

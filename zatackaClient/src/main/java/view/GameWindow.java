@@ -124,6 +124,7 @@ public class GameWindow extends JDialog implements ActionListener {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                if (prediction != null) prediction.rotateLeft();
                 socketManager.getOut().println("l");
             }
         });
@@ -131,6 +132,7 @@ public class GameWindow extends JDialog implements ActionListener {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                if (prediction != null) prediction.rotateRight();
                 socketManager.getOut().println("r");
             }
         });
@@ -145,12 +147,15 @@ public class GameWindow extends JDialog implements ActionListener {
             public void run() {
                 while (movingThreadRunning) {
                     try {
-                        if (prediction == null || socketManager.getIn().ready()) {
+                       // if (prediction == null /*|| socketManager.getIn().ready()*/) {
                             String command = socketManager.getIn().readLine();
                             if (command.equals("kasztan")) {
                                 refreshBoard = true;
+                                oldRow[id] = (int)pos.getX();
+                                oldColumn[id] = (int)pos.getY();
                                 prediction = new PredictionCalculator(pos, dir);
                                 socketManager.getOut().println("start");
+                                prediction.initTime();
                             } else {
                                 String[] rowInts = command.split("/");
 
@@ -159,6 +164,8 @@ public class GameWindow extends JDialog implements ActionListener {
                                 int color = Integer.parseInt(rowInts[2]);
                                 int number = Integer.parseInt(rowInts[3]);
 
+                                //prediction.synchronizePosition(new Point(row, column));
+                                
                                 if (!painted[row][column]) {
                                     if (LOGGER.isDebugEnabled()) {
                                         LOGGER.debug("Pakiet watku " + number + " odebrano. Narysuj " + row + "," + column);
@@ -166,14 +173,19 @@ public class GameWindow extends JDialog implements ActionListener {
                                     interpolate(row, column, number, color);
                                 }
                             }
-                        } else {
-                            prediction.Update();
-                            if (LOGGER.isDebugEnabled()) {
-                                        LOGGER.debug("Predicition");
-                                    }
-                            
-                            
-                        } 
+                       // } //else {
+//                            prediction.Update();
+//                            
+//                            Point point = prediction.getPosition();
+//                            
+//                            if (LOGGER.isDebugEnabled()) {
+//                                        LOGGER.debug("Predicition:" + point.getX() + ", " + point.getY());
+//                                    }
+//                            
+//                            if (oldRow[id] != (int) point.getX() || oldColumn[id] != (int) point.getY()) {
+//                                //interpolate((int) point.getX(), (int) point.getY(), id, COLORS[id]);
+//                            }
+                        //} 
 
                         if (refreshBoard) {
                             refreshBoardImage();

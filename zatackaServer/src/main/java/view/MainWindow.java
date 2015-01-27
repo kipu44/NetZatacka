@@ -243,7 +243,7 @@ public class MainWindow extends JFrame {
                 number++;
                 out.println(String.format(Locale.ENGLISH, D_D_D_D, x, y, c, id));
                 if (Math.abs(x - lastSentX) > 3 || Math.abs(y - lastSentY) > 3) {
-                    LOGGER.error("Error");
+                    LOGGER.error("Error" + String.format(Locale.ENGLISH, D_D_D_D, x, y, c, id));
                 } else {
                     //interpolate(x, y);
                 }
