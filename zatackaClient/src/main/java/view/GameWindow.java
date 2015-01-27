@@ -23,6 +23,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+import net.Point;
+import net.PredictionCalculator;
 import net.SocketManager;
 import org.apache.log4j.Logger;
 
@@ -33,6 +35,13 @@ public class GameWindow extends JDialog implements ActionListener {
 
     private static final long serialVersionUID = -8526687153001631775L;
 
+            private static final int[] COLORS = {
+            0xFF00FFFF,
+            0xFFFFFF00,
+            0xFF000000,
+            0xFFFFFFFF
+    };
+    
     private static final Logger LOGGER = Logger.getLogger(GameWindow.class);
 
     private int width = 640;
@@ -47,6 +56,7 @@ public class GameWindow extends JDialog implements ActionListener {
     private final KeyStroke leftStroke;
     private final KeyStroke rightStroke;
     private boolean[][] painted;
+    private PredictionCalculator prediction;
 
     public GameWindow(Window parent) {
         super(parent, "Zatacka");
@@ -108,7 +118,7 @@ public class GameWindow extends JDialog implements ActionListener {
         }
     }
 
-    public void startMoving(SocketManager socketManager) throws IOException {
+    public void startMoving(SocketManager socketManager, Point pos, Point dir, int id) throws IOException {
         ActionMap actionMap = panel.getActionMap();
         actionMap.put(leftStroke.toString(), new AbstractAction() {
 
@@ -135,28 +145,40 @@ public class GameWindow extends JDialog implements ActionListener {
             public void run() {
                 while (movingThreadRunning) {
                     try {
-                        String command = socketManager.getIn().readLine();
-                        if (command.equals("kasztan")) {
-                            refreshBoard = true;
-                        } else {
-                            String[] rowInts = command.split("/");
+                        if (prediction == null || socketManager.getIn().ready()) {
+                            String command = socketManager.getIn().readLine();
+                            if (command.equals("kasztan")) {
+                                refreshBoard = true;
+                                prediction = new PredictionCalculator(pos, dir);
+                                socketManager.getOut().println("start");
+                            } else {
+                                String[] rowInts = command.split("/");
 
-                            int row = Integer.parseInt(rowInts[0]);
-                            int column = Integer.parseInt(rowInts[1]);
-                            int color = Integer.parseInt(rowInts[2]);
-                            int number = Integer.parseInt(rowInts[3]);
+                                int row = Integer.parseInt(rowInts[0]);
+                                int column = Integer.parseInt(rowInts[1]);
+                                int color = Integer.parseInt(rowInts[2]);
+                                int number = Integer.parseInt(rowInts[3]);
 
-                            if (!painted[row][column]) {
-                                if (LOGGER.isDebugEnabled()) {
-                                    LOGGER.debug("Pakiet watku " + number + " odebrano. Narysuj " + row + "," + column);
+                                if (!painted[row][column]) {
+                                    if (LOGGER.isDebugEnabled()) {
+                                        LOGGER.debug("Pakiet watku " + number + " odebrano. Narysuj " + row + "," + column);
+                                    }
+                                    interpolate(row, column, number, color);
                                 }
-                                interpolate(row, column, number, color);
                             }
-                        }
+                        } else {
+                            prediction.Update();
+                            if (LOGGER.isDebugEnabled()) {
+                                        LOGGER.debug("Predicition");
+                                    }
+                            
+                            
+                        } 
 
                         if (refreshBoard) {
                             refreshBoardImage();
                         }
+
                     } catch (IOException | NumberFormatException e) {
                         LOGGER.error(e.getMessage(), e);
                     }

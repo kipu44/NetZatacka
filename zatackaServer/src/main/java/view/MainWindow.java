@@ -181,7 +181,11 @@ public class MainWindow extends JFrame {
 
         @Override
         public void run() {
-            out.println(Integer.toString(WIDTH) + "/" + Integer.toString(HEIGHT));
+            out.println(Integer.toString(WIDTH) + "/" + Integer.toString(HEIGHT) + "/" + Integer.toString(id));
+            Point pos = game.getPlayers().get(id).getLastPosition();
+            Point dir = game.getPlayers().get(id).getDirection();
+            out.println(Double.toString(pos.getX()) + "/" + Double.toString(pos.getY()) + "/" + Double.toString(dir.getX()) + "/" + Double.toString(dir.getY()));
+            
             List<Player> players = game.getPlayers();
 
             for (int i = 0; i < players.size(); i++) {
@@ -193,7 +197,8 @@ public class MainWindow extends JFrame {
                     }
                 }
             }
-
+            
+            
             out.println("kasztan");
 
             while (running) {

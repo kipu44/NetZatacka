@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import model.ConnectionSettings;
+import net.Point;
 import net.SocketManager;
 import org.apache.log4j.Logger;
 
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
  * Created by rafal on 14.01.15.
  */
 public class MainWindow extends JFrame implements ActionListener {
-
+    
     private static final long serialVersionUID = -6508168645897184063L;
 
     private static final Logger LOGGER = Logger.getLogger(MainWindow.class);
@@ -95,9 +96,15 @@ public class MainWindow extends JFrame implements ActionListener {
 
                     int width = Integer.parseInt(rowInts[0]);
                     int height = Integer.parseInt(rowInts[1]);
-
+                    int id = Integer.parseInt(rowInts[2]);
+                     
+                    command = socketManager.getIn().readLine();
+                    String[] rowDoubles = command.split("/");
+                    Point pos = new Point(Double.parseDouble(rowDoubles[0]), Double.parseDouble(rowDoubles[1]));
+                    Point dir = new Point(Double.parseDouble(rowDoubles[2]), Double.parseDouble(rowDoubles[3]));
+                    
                     gameWindow.setBoardSize(width, height);
-                    gameWindow.startMoving(socketManager);
+                    gameWindow.startMoving(socketManager, pos, dir, id);
                     gameWindow.setVisible(true);
                     break;
                 case Commands.SETTINGS_COMMAND:
