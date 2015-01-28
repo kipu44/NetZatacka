@@ -156,6 +156,13 @@ public class GameWindow extends JDialog implements ActionListener {
                                 prediction = new PredictionCalculator(pos, dir);
                                 socketManager.getOut().println("start");
                                 prediction.initTime();
+                            } else if (command.equals("koniec")){
+                                createBoardImage(width, height);
+                                
+                                for (int i = 0; i < 4; i++) {
+                                    oldRow[i] = -317;
+                                    oldColumn[i] = -317;
+                                }                
                             } else {
                                 String[] rowInts = command.split("/");
 
@@ -167,9 +174,9 @@ public class GameWindow extends JDialog implements ActionListener {
                                 //prediction.synchronizePosition(new Point(row, column));
                                 
                                 if (!painted[row][column]) {
-                                    if (LOGGER.isDebugEnabled()) {
-                                        LOGGER.debug("Pakiet watku " + number + " odebrano. Narysuj " + row + "," + column);
-                                    }
+//                                    if (LOGGER.isDebugEnabled()) {
+//                                        LOGGER.debug("Pakiet watku " + number + " odebrano. Narysuj " + row + "," + column);
+//                                    }
                                     interpolate(row, column, number, color);
                                 }
                             }

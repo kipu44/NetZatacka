@@ -15,10 +15,10 @@ public class Game implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Game.class);
 
-    private static final double SPEED = 16.0f;
+    private static final double SPEED = 32.0f;
     private static final double ROTATE = 0.5;
     private static final Random RANDOM = new Random();
-    private static final double TICK = 1 / 60.0;
+    private static final double TICK = 1 / 30.0;
 
     private final int width;
     private final int height;
@@ -59,6 +59,8 @@ public class Game implements Runnable {
 //                LOGGER.debug("DeltaTime:" + deltaTime);
 //            }
 
+            int deadPlayers = 0;
+
             if (delta > TICK) {
                 for (Player player : players) {
 
@@ -78,7 +80,6 @@ public class Game implements Runnable {
 //                                    newPosition.getX(),
 //                                    newPosition.getY()));
 //                        }
-
                         if (collision(lastPosition, newPosition)) {
                             player.setAlive(false);
                             if (LOGGER.isDebugEnabled()) {
@@ -87,7 +88,13 @@ public class Game implements Runnable {
                         } else {
                             player.addPosition(newPosition);
                         }
+                    } else {
+                        deadPlayers++;
                     }
+                }
+
+                if (deadPlayers >= players.size() - 1 && deadPlayers > 0) {
+                    restart();
                 }
 
                 delta -= TICK;
@@ -179,5 +186,36 @@ public class Game implements Runnable {
         }
 
         return true;
+    }
+
+    private synchronized void restart() {
+        synchronized (players) {
+
+            painted = new boolean[width][height];
+            painted = new boolean[width][height];
+            for (int i = 0; i < width; i++) {
+                painted[i][height - 1] = true;
+                painted[i][0] = true;
+            }
+            for (int i = 0; i < height; i++) {
+                painted[width - 1][i] = true;
+                painted[0][i] = true;
+            }
+
+            for (int i = 0; i < players.size(); i++) {
+                players.get(i).getPositions().clear();
+                players.get(i).setRestart(true);
+                players.get(i).setAlive(false);
+
+                double angle = Math.toRadians(RANDOM.nextInt(360));
+                double s = StrictMath.sin(angle);
+                double c = StrictMath.cos(angle);
+                Point direction = new Point(s, c);
+                Point position = new Point(RANDOM.nextInt(width - 2) + 1, RANDOM.nextInt(height - 2) + 1);
+                
+                players.get(i).setDirection(direction);
+                players.get(i).addPosition(position);
+            }
+        }
     }
 }

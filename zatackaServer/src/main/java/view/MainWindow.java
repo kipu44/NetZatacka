@@ -41,10 +41,10 @@ public class MainWindow extends JFrame {
     public static final int HEIGHT = 480;
 
     private static final int[] COLORS = {
-            0xFF00FFFF,
-            0xFFFFFF00,
-            0xFF000000,
-            0xFFFFFFFF
+        0xFF00FFFF,
+        0xFFFFFF00,
+        0xFF000000,
+        0xFFFFFFFF
     };
 
     //ServerSocket, Socket, Input and Output Streams
@@ -185,7 +185,7 @@ public class MainWindow extends JFrame {
             Point pos = game.getPlayers().get(id).getLastPosition();
             Point dir = game.getPlayers().get(id).getDirection();
             out.println(Double.toString(pos.getX()) + "/" + Double.toString(pos.getY()) + "/" + Double.toString(dir.getX()) + "/" + Double.toString(dir.getY()));
-            
+
             List<Player> players = game.getPlayers();
 
             for (int i = 0; i < players.size(); i++) {
@@ -197,22 +197,25 @@ public class MainWindow extends JFrame {
                     }
                 }
             }
-            
-            
+
             out.println("kasztan");
 
             while (running) {
                 try {
                     for (int i = 0; i < players.size(); i++) {
                         Player player = players.get(i);
-                        if (player.isAlive()) {
-                            Point lastPlayerPosition = player.getLastPosition();
-                            if (lastPlayerPosition == null) {
-                                // LOGGER.error("gracz: " + player);
-                            } else {
-                                sendPosition(lastPlayerPosition, i);
+                        if (player.isRestart()) {
+                            out.println("koniec");
+                            player.setAlive(true);
+                            player.setRestart(false);
+                        } else if (player.isAlive()) {
+                                Point lastPlayerPosition = player.getLastPosition();
+                                if (lastPlayerPosition == null) {
+                                    // LOGGER.error("gracz: " + player);
+                                } else {
+                                    sendPosition(lastPlayerPosition, i);
+                                }
                             }
-                        }
                     }
 
                     if (in.ready()) {
@@ -272,7 +275,6 @@ public class MainWindow extends JFrame {
 //                game.drawPoint(row, column);
 //            }
 //        }
-
         @Override
         protected void finalize() throws Throwable {
             running = false;

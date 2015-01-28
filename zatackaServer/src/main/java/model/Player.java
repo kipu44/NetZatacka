@@ -11,9 +11,10 @@ public class Player {
 
     private static final Logger LOGGER = Logger.getLogger(Player.class);
 
-    private final Point direction;
+    private Point direction;
     private final List<Point> positions;
     private boolean alive;
+    private boolean restart;
 
     public Player(Point direction, Point position, int l1, int l2) {
         this.direction = direction;
@@ -35,6 +36,11 @@ public class Player {
         return direction;
     }
 
+    public void setDirection(Point direction) {
+        this.direction = direction;
+    }
+    
+
     public Point getLastPosition() {
         return positions.get(positions.size() - 1);
     }
@@ -53,6 +59,14 @@ public class Player {
 
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+
+    public boolean isRestart() {
+        return restart;
+    }
+
+    public void setRestart(boolean restart) {
+        this.restart = restart;
     }
 
 }
